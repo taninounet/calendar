@@ -12,6 +12,13 @@
       position: relative;
     }
 
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 30px;
+      position: relative;
+    }
+
     .day {
       outline: 1px solid white;
       outline-offset: -1px;
@@ -26,13 +33,6 @@
       height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
     }
 
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 30px;
-      position: relative;
-    }
-
     .date-number {
       display: flex;
       align-items: center;
@@ -43,7 +43,6 @@
       color: white;
       padding-right: 20px;
       line-height: 1;
-      /* white text stroke for outline */
       -webkit-text-stroke: 1px white;
     }
 
@@ -58,7 +57,6 @@
       font-weight: bold;
       padding-left: 20px;
       line-height: 1;
-      /* matching text stroke */
       -webkit-text-stroke: 1px #dddddd;
     }
 
@@ -74,8 +72,6 @@
       background-color: rgba(168, 218, 220, 0.5);
       border-radius: 10px;
       top: 10px;
-      left: 0;
-      width: 100%;
       z-index: 0;
     }
 
@@ -85,15 +81,13 @@
       background-color: #a8dadc;
       border-radius: 10px;
       top: 10px;
-      left: 0;
-      width: 100%;
-      z-index: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-size: 14px;
       font-weight: bold;
+      z-index: 1;
     }
   </style>
 </head>
@@ -106,107 +100,77 @@
     const endDate = new Date('2026-12-31');
     const today = new Date();
 
-    function isSameDay(d1, d2) {
-      return d1.getFullYear() === d2.getFullYear() &&
-             d1.getMonth() === d2.getMonth() &&
-             d1.getDate() === d2.getDate();
-    }
-
+    // Build calendar cells
     let monthTracker = -1;
     const dayRefs = [];
     let todayIndex = null;
-
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const date = new Date(d);
       const dayDiv = document.createElement('div');
       dayDiv.className = 'day';
-      if (isSameDay(date, today)) {
+      if (date.toDateString() === today.toDateString()) {
         dayDiv.classList.add('today');
         todayIndex = dayRefs.length;
       }
-
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
-        const monthLabel = document.createElement('div');
-        monthLabel.className = 'month-label';
-        monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
-        dayDiv.appendChild(monthLabel);
+        const lbl = document.createElement('div');
+        lbl.className = 'month-label';
+        lbl.textContent = date.toLocaleString('en-US', { month: 'short' });
+        dayDiv.appendChild(lbl);
         monthTracker = date.getMonth();
       } else {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'month-label';
-        placeholder.textContent = '';
-        dayDiv.appendChild(placeholder);
+        const empty = document.createElement('div');
+        empty.className = 'month-label';
+        dayDiv.appendChild(empty);
       }
-
-      const dateNum = document.createElement('div');
-      dateNum.className = 'date-number';
-      dateNum.textContent = date.getDate();
-      dayDiv.appendChild(dateNum);
-
+      const num = document.createElement('div');
+      num.className = 'date-number';
+      num.textContent = date.getDate();
+      dayDiv.appendChild(num);
       calendar.appendChild(dayDiv);
       dayRefs.push(dayDiv);
     }
 
+    // Continuous event bar
     function addEvent(label, startStr, endStr, finalStr) {
       const start = new Date(startStr);
       const end = new Date(endStr);
       const final = new Date(finalStr);
-      const idxStart = Math.floor((start - startDate) / (1000 * 3600 * 24));
-      const idxEnd = Math.floor((end   - startDate) / (1000 * 3600 * 24));
-      const idxFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
+      const idxStart = Math.floor((start - startDate) / (1000*3600*24));
+      const idxEnd = Math.floor((end   - startDate) / (1000*3600*24));
+      const idxFinal = Math.floor((final - startDate) / (1000*3600*24));
 
-      // continuous bar spanning
       const cellWidth = dayRefs[0].offsetWidth;
       const gapX = 30;
       const leftPos = dayRefs[idxStart].offsetLeft;
-      const barWidth = (idxEnd - idxStart + 1) * cellWidth + (idxEnd - idxStart) * gapX;
+      const width = (idxEnd - idxStart + 1) * cellWidth + (idxEnd - idxStart) * gapX;
+
       const span = document.createElement('div');
       span.className = 'event-bar-span';
-      span.style.position = 'absolute';
       span.style.left = `${leftPos}px`;
-      span.style.top = `10px`;
-      span.style.width = `${barWidth}px`;
+      span.style.width = `${width}px`;
       calendar.appendChild(span);
 
-      // final label at end
-      const finalLeft = dayRefs[idxFinal].offsetLeft;
       const finalBar = document.createElement('div');
       finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
-      finalBar.style.position = 'absolute';
-      finalBar.style.left = `${finalLeft}px`;
-      finalBar.style.top = `10px`;
+      finalBar.style.left = `${dayRefs[idxFinal].offsetLeft}px`;
       finalBar.style.width = `${cellWidth}px`;
       calendar.appendChild(finalBar);
     }
 
-      const finalBar = document.createElement('div');
-      finalBar.className = 'event-bar-final';
-      finalBar.textContent = label;
-      dayRefs[indexFinal].appendChild(finalBar);
-    }
-
-    // Tennis Grand Slam Events 2025
+    // Grand Slams
     addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26');
-    addEvent('French Open', '2025-05-26', '2025-06-08', '2025-06-08');
-    addEvent('Wimbledon', '2025-06-30', '2025-07-13', '2025-07-13');
-    addEvent('US Open', '2025-08-25', '2025-09-07', '2025-09-07');
-
-    // Tennis Grand Slam Events 2026
+    addEvent('French Open','2025-05-26','2025-06-08','2025-06-08');
+    addEvent('Wimbledon','2025-06-30','2025-07-13','2025-07-13');
+    addEvent('US Open','2025-08-25','2025-09-07','2025-09-07');
     addEvent('Aus Open', '2026-01-12', '2026-01-25', '2026-01-25');
-    addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07');
-    addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12');
-    addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13');
+    addEvent('French Open','2026-05-25','2026-06-07','2026-06-07');
+    addEvent('Wimbledon','2026-06-29','2026-07-12','2026-07-12');
+    addEvent('US Open','2026-08-31','2026-09-13','2026-09-13');
 
-    // Scroll to today
     window.onload = () => {
-      setTimeout(() => {
-        if (todayIndex !== null) {
-          const todayElem = dayRefs[todayIndex];
-          const top = todayElem.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({ top: top - window.innerHeight / 2, behavior: 'smooth' });
-        }
-      }, 100);
+      if (todayIndex !== null) dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
   </script>
 </body>
