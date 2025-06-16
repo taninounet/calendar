@@ -104,6 +104,14 @@
 
   <script>
     const calendar = document.getElementById('calendar');
+    const style = getComputedStyle(calendar);
+    const sidePadding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    const gap = parseFloat(style.gap);
+    const contentWidth = window.innerWidth - sidePadding;
+    const cellWidth = (contentWidth - gap * 6) / 7;
+    const cellHeight = cellWidth / 2;
+    const calendarLeft = calendar.getBoundingClientRect().left;
+
     const startDate = new Date('2024-12-30');
     const endDate = new Date('2026-12-31');
     const today = new Date();
@@ -147,48 +155,37 @@
       dayRefs.push(dayDiv);
     }
 
-    // After building, compute cell dimensions and gaps
-    const cellRect = dayRefs[0].getBoundingClientRect();
-    const gap = 30; // from CSS
-    const cellWidth = cellRect.width;
-    const cellHeight = cellRect.height;
-
     function addEvent(label, startStr, endStr, finalStr) {
       const start = new Date(startStr);
       const end = new Date(endStr);
       const final = new Date(finalStr);
       const idxStart = Math.floor((start - startDate) / (1000 * 3600 * 24));
-      const idxEnd = Math.floor((end - startDate) / (1000 * 3600 * 24));
+      const idxEnd = Math.floor((end   - startDate) / (1000 * 3600 * 24));
       const idxFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
 
-      // For each week spanned
       let i = idxStart;
       while (i <= idxEnd) {
         const weekRow = Math.floor(i / 7);
-        const weekStart = weekRow * 7;
-        const weekEnd = weekStart + 6;
         const segStart = i;
-        const segEnd = Math.min(idxEnd, weekEnd);
+        const segEnd = Math.min(idxEnd, weekRow * 7 + 6);
 
-        // Create span segment
         const span = document.createElement('div');
         span.className = 'event-bar-span';
-        span.style.left = `${(segStart % 7) * (cellWidth + gap)}px`;
-        span.style.top = `${weekRow * (cellHeight + gap) + 10}px`;
+        span.style.left  = `${calendarLeft + (segStart % 7) * (cellWidth + gap)}px`;
+        span.style.top   = `${weekRow * (cellHeight + gap) + 10}px`;
         span.style.width = `${(segEnd - segStart + 1) * cellWidth + (segEnd - segStart) * gap}px`;
         calendar.appendChild(span);
 
         i = segEnd + 1;
       }
 
-      // Final label
       const finalRow = Math.floor(idxFinal / 7);
       const finalCol = idxFinal % 7;
       const finalBar = document.createElement('div');
       finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
-      finalBar.style.left = `${finalCol * (cellWidth + gap)}px`;
-      finalBar.style.top = `${finalRow * (cellHeight + gap) + 10}px`;
+      finalBar.style.left  = `${calendarLeft + finalCol * (cellWidth + gap)}px`;
+      finalBar.style.top   = `${finalRow * (cellHeight + gap) + 10}px`;
       finalBar.style.width = `${cellWidth}px`;
       calendar.appendChild(finalBar);
     }
@@ -205,7 +202,6 @@
     addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12');
     addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13');
 
-    // Scroll to today
     window.onload = () => {
       if (todayIndex !== null) {
         dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
