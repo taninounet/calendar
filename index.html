@@ -14,54 +14,53 @@
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 16px;
+      gap: 24px;
     }
 
     .day {
       position: relative;
       height: 130px;
       border-radius: 14px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-      background-color: white;
-      padding: 8px;
+      background-color: #d3d3d3;
       display: flex;
-      flex-direction: column;
+      align-items: flex-end;
       justify-content: space-between;
-      transition: all 0.2s ease-in-out;
+      padding: 10px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
-    .day span.date {
-      font-size: 13px;
-      font-weight: 600;
-      color: #333;
+    .date-number {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .month-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 1px 1px 2px black;
     }
 
     .today {
       border: 2px solid red;
     }
 
-    .event-strip {
+    .event-bar {
       position: absolute;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
-      height: 22px;
-      border-radius: 6px;
-      font-size: 12px;
-      color: white;
-      padding-left: 5px;
-      display: flex;
-      align-items: center;
-      z-index: 1;
-    }
-
-    .event-final {
-      background-color: #a8dadc;
-      font-weight: bold;
-    }
-
-    .event-leadup {
+      height: 18px;
       background-color: rgba(168, 218, 220, 0.4);
+      border-radius: 10px;
+      z-index: 0;
+    }
+
+    .event-bar.final {
+      background-color: #a8dadc;
+      z-index: 1;
+      text-align: left;
+      padding-left: 6px;
+      font-weight: bold;
+      color: white;
     }
   </style>
 </head>
@@ -74,46 +73,64 @@
     const endDate = new Date('2026-12-31');
     const today = new Date();
 
-    function formatDate(date) {
-      const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      return date.toLocaleDateString('en-US', options);
-    }
-
-    function sameDay(d1, d2) {
+    function isSameDay(d1, d2) {
       return d1.getFullYear() === d2.getFullYear() &&
              d1.getMonth() === d2.getMonth() &&
              d1.getDate() === d2.getDate();
     }
 
+    let monthTracker = -1;
+
+    const dayRefs = [];
+
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const date = new Date(d);
       const dayDiv = document.createElement('div');
       dayDiv.className = 'day';
-
-      if (sameDay(d, today)) {
+      if (isSameDay(date, today)) {
         dayDiv.classList.add('today');
       }
 
-      const dateSpan = document.createElement('span');
-      dateSpan.className = 'date';
-      dateSpan.textContent = formatDate(new Date(d));
+      const dateNum = document.createElement('div');
+      dateNum.className = 'date-number';
+      dateNum.textContent = date.getDate();
+      dayDiv.appendChild(dateNum);
 
-      dayDiv.appendChild(dateSpan);
+      if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
+        const monthLabel = document.createElement('div');
+        monthLabel.className = 'month-label';
+        monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
+        dayDiv.appendChild(monthLabel);
+        monthTracker = date.getMonth();
+      } else {
+        dayDiv.appendChild(document.createElement('div'));
+      }
+
       calendar.appendChild(dayDiv);
+      dayRefs.push(dayDiv);
     }
 
-    // Add event spans manually
     function addEvent(startStr, endStr, label) {
       const start = new Date(startStr);
       const end = new Date(endStr);
-      const children = calendar.children;
+      const indexStart = Math.floor((start - startDate) / (1000 * 3600 * 24));
+      const indexEnd = Math.floor((end - startDate) / (1000 * 3600 * 24));
 
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const index = Math.floor((d - startDate) / (1000 * 3600 * 24));
-        const eventDiv = document.createElement('div');
-        eventDiv.className = 'event-strip ' + (sameDay(d, end) ? 'event-final' : 'event-leadup');
-        if (sameDay(d, end)) eventDiv.textContent = label;
-        children[index].appendChild(eventDiv);
-      }
+      const bar = document.createElement('div');
+      bar.className = 'event-bar';
+      bar.style.gridColumn = `span ${indexEnd - indexStart}`;
+      bar.style.left = `${(indexStart % 7) * 100}%`;
+      bar.style.top = `${Math.floor(indexStart / 7) * 150}px`;
+      bar.style.width = `calc(${indexEnd - indexStart + 1} * (100% + 24px) - 24px)`;
+      dayRefs[indexStart].appendChild(bar);
+
+      const finalBar = document.createElement('div');
+      finalBar.className = 'event-bar final';
+      finalBar.textContent = label;
+      finalBar.style.width = '100%';
+      finalBar.style.bottom = '8px';
+      finalBar.style.left = '0';
+      dayRefs[indexEnd].appendChild(finalBar);
     }
 
     // 2025 Tennis Grand Slam events
