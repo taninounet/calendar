@@ -6,97 +6,127 @@
   <title>Sports Calendar</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: white;
-      margin: 20px;
+      margin: 40px;
     }
 
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 10px;
+      gap: 16px;
     }
 
     .day {
       position: relative;
-      height: 120px;
-      border-radius: 12px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+      height: 130px;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
       background-color: white;
-      padding: 5px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
-
-    .day.today {
-      border: 2px solid red;
+      transition: all 0.2s ease-in-out;
     }
 
     .day span.date {
-      font-size: 14px;
-      font-weight: bold;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
     }
 
-    .event-span {
-      grid-column: span var(--span-days);
-      position: relative;
+    .today {
+      border: 2px solid red;
+    }
+
+    .event-strip {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: white;
+      padding-left: 5px;
       display: flex;
       align-items: center;
-      height: 20px;
-      background-color: var(--event-color-light);
-      border-radius: 10px;
-      margin-bottom: 4px;
+      z-index: 1;
     }
 
     .event-final {
-      position: absolute;
-      height: 20px;
-      width: 100%;
-      background-color: var(--event-color);
-      border-radius: 10px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: left;
-      padding-left: 6px;
-      z-index: 2;
+      background-color: #a8dadc;
+      font-weight: bold;
     }
 
-    .event-container {
-      grid-column: span 7;
-      display: contents;
-    }
-
-    .tennis {
-      --event-color: #a8dadc;
-      --event-color-light: rgba(168, 218, 220, 0.4);
+    .event-leadup {
+      background-color: rgba(168, 218, 220, 0.4);
     }
   </style>
 </head>
 <body>
-  <div class="calendar">
-    <!-- Calendar will include Jan 1 2025 to Dec 31 2026 -->
-    <!-- Sample week with today (e.g., Jun 16, 2025) marked -->
+  <div class="calendar" id="calendar"></div>
 
-    <!-- Loop simulation -->
-    <!-- Example dates manually created -->
-    <div class="day"> <span class="date">Jun 14, 2025</span> </div>
-    <div class="day"> <span class="date">Jun 15, 2025</span> </div>
-    <div class="day"> <span class="date">Jun 16, 2025</span> </div>
-    <div class="day today"> <span class="date">Jun 17, 2025</span> </div>
-    <div class="day"> <span class="date">Jun 18, 2025</span> </div>
-    <div class="day"> <span class="date">Jun 19, 2025</span> </div>
-    <div class="day"> <span class="date">Jun 20, 2025</span> </div>
+  <script>
+    const calendar = document.getElementById('calendar');
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2026-12-31');
+    const today = new Date();
 
-    <!-- Tennis Grand Slam example: Australian Open 2025 -->
-    <div class="event-container tennis">
-      <div class="event-span" style="--span-days:14"></div>
-      <div class="event-final">Aus Open Final</div>
-    </div>
+    function formatDate(date) {
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
 
-    <!-- More Grand Slam events would be added below this following same structure -->
-    <!-- Dates below are placeholder blocks, to be filled programmatically or expanded manually -->
-  </div>
+    function sameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
+
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day';
+
+      if (sameDay(d, today)) {
+        dayDiv.classList.add('today');
+      }
+
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'date';
+      dateSpan.textContent = formatDate(new Date(d));
+
+      dayDiv.appendChild(dateSpan);
+      calendar.appendChild(dayDiv);
+    }
+
+    // Add event spans manually
+    function addEvent(startStr, endStr, label) {
+      const start = new Date(startStr);
+      const end = new Date(endStr);
+      const children = calendar.children;
+
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const index = Math.floor((d - startDate) / (1000 * 3600 * 24));
+        const eventDiv = document.createElement('div');
+        eventDiv.className = 'event-strip ' + (sameDay(d, end) ? 'event-final' : 'event-leadup');
+        if (sameDay(d, end)) eventDiv.textContent = label;
+        children[index].appendChild(eventDiv);
+      }
+    }
+
+    // 2025 Tennis Grand Slam events
+    addEvent('2025-01-13', '2025-01-26', 'Aus Open');
+    addEvent('2025-05-26', '2025-06-08', 'French Open');
+    addEvent('2025-06-30', '2025-07-13', 'Wimbledon');
+    addEvent('2025-08-25', '2025-09-07', 'US Open');
+
+    // 2026 Tennis Grand Slam events
+    addEvent('2026-01-12', '2026-01-25', 'Aus Open');
+    addEvent('2026-05-25', '2026-06-07', 'French Open');
+    addEvent('2026-06-29', '2026-07-12', 'Wimbledon');
+    addEvent('2026-08-31', '2026-09-13', 'US Open');
+  </script>
 </body>
 </html>
