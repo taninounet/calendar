@@ -6,7 +6,7 @@
   <title>Sports Calendar</title>
   <style>
     body {
-      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background: white;
       padding: 0 40px;
       position: relative;
@@ -26,10 +26,7 @@
       height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
     }
 
-    
-
     .calendar {
-      position: relative;
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 30px;
@@ -45,7 +42,6 @@
       color: white;
       padding-right: 20px;
       line-height: 1;
-      /* white text stroke for outline */
       -webkit-text-stroke: 1px white;
     }
 
@@ -60,7 +56,6 @@
       font-weight: bold;
       padding-left: 20px;
       line-height: 1;
-      /* matching text stroke */
       -webkit-text-stroke: 1px #dddddd;
     }
 
@@ -72,10 +67,8 @@
 
     .event-bar-span {
       position: absolute;
-      height: 38px;
-      background-color: rgba(168, 218, 220, 0.5);
+      background-color: var(--event-color, rgba(168, 218, 220, 0.5));
       border-radius: 10px;
-      top: 10px;
       left: 0;
       width: 100%;
       z-index: 0;
@@ -104,14 +97,6 @@
 
   <script>
     const calendar = document.getElementById('calendar');
-    const style = getComputedStyle(calendar);
-    const sidePadding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-    const gap = parseFloat(style.gap);
-    const contentWidth = window.innerWidth - sidePadding;
-    const cellWidth = (contentWidth - gap * 6) / 7;
-    const cellHeight = cellWidth / 2;
-    const calendarLeft = calendar.getBoundingClientRect().left;
-
     const startDate = new Date('2024-12-30');
     const endDate = new Date('2026-12-31');
     const today = new Date();
@@ -122,7 +107,6 @@
              d1.getDate() === d2.getDate();
     }
 
-    // Build calendar grid
     let monthTracker = -1;
     const dayRefs = [];
     let todayIndex = null;
@@ -135,6 +119,7 @@
         dayDiv.classList.add('today');
         todayIndex = dayRefs.length;
       }
+
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const monthLabel = document.createElement('div');
         monthLabel.className = 'month-label';
@@ -147,15 +132,17 @@
         placeholder.textContent = '';
         dayDiv.appendChild(placeholder);
       }
+
       const dateNum = document.createElement('div');
       dateNum.className = 'date-number';
       dateNum.textContent = date.getDate();
       dayDiv.appendChild(dateNum);
+
       calendar.appendChild(dayDiv);
       dayRefs.push(dayDiv);
     }
 
-    function addEvent(label, startStr, endStr, finalStr) {
+    function addEvent(label, startStr, endStr, finalStr, color = '#a8dadc', position = 'top') {
       const start = new Date(startStr);
       const end = new Date(endStr);
       const final = new Date(finalStr);
@@ -163,44 +150,48 @@
       const idxEnd = Math.floor((end   - startDate) / (1000 * 3600 * 24));
       const idxFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
 
-      let i = idxStart;
-      while (i <= idxEnd) {
-        const weekRow = Math.floor(i / 7);
-        const segStart = i;
-        const segEnd = Math.min(idxEnd, weekRow * 7 + 6);
+      const barHeight = (dayRefs[0].offsetHeight - 20) / 3; // fit three bars with 10px padding
+      const positionY = {
+        top: 10,
+        middle: 10 + barHeight + 5,
+        bottom: 10 + 2 * (barHeight + 5)
+      }[position] || 10;
 
-        const span = document.createElement('div');
-        span.className = 'event-bar-span';
-        span.style.left  = `${calendarLeft + (segStart % 7) * (cellWidth + gap)}px`;
-        span.style.top   = `${weekRow * (cellHeight + gap) + 10}px`;
-        span.style.width = `${(segEnd - segStart + 1) * cellWidth + (segEnd - segStart) * gap}px`;
-        calendar.appendChild(span);
-
-        i = segEnd + 1;
+      for (let i = idxStart; i <= idxEnd; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'event-bar-span';
+        bar.style.setProperty('--event-color', color);
+        bar.style.height = `${barHeight}px`;
+        bar.style.top = `${positionY}px`;
+        dayRefs[i].appendChild(bar);
       }
 
-      const finalRow = Math.floor(idxFinal / 7);
-      const finalCol = idxFinal % 7;
       const finalBar = document.createElement('div');
       finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
-      finalBar.style.left  = `${calendarLeft + finalCol * (cellWidth + gap)}px`;
-      finalBar.style.top   = `${finalRow * (cellHeight + gap) + 10}px`;
-      finalBar.style.width = `${cellWidth}px`;
-      calendar.appendChild(finalBar);
+      finalBar.style.backgroundColor = color;
+      finalBar.style.height = `${barHeight}px`;
+      finalBar.style.top = `${positionY}px`;
+      dayRefs[idxFinal].appendChild(finalBar);
     }
 
-    // Tennis Grand Slam Events 2025
-    addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26');
-    addEvent('French Open', '2025-05-26', '2025-06-08', '2025-06-08');
-    addEvent('Wimbledon', '2025-06-30', '2025-07-13', '2025-07-13');
-    addEvent('US Open', '2025-08-25', '2025-09-07', '2025-09-07');
+      const finalBar = document.createElement('div');
+      finalBar.className = 'event-bar-final';
+      finalBar.textContent = label;
+      dayRefs[idxFinal].appendChild(finalBar);
+    }
+
+        // Tennis Grand Slam Events 2025
+    addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26', '#ffcc00', 'top');
+    addEvent('French Open', '2025-05-26', '2025-06-08', '2025-06-08', '#ff3333', 'middle');
+    addEvent('Wimbledon', '2025-06-30', '2025-07-13', '2025-07-13', '#33cc33', 'bottom');
+    addEvent('US Open', '2025-08-25', '2025-09-07', '2025-09-07', '#3366ff', 'top');
 
     // Tennis Grand Slam Events 2026
-    addEvent('Aus Open', '2026-01-12', '2026-01-25', '2026-01-25');
-    addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07');
-    addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12');
-    addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13');
+    addEvent('Aus Open', '2026-01-12', '2026-01-25', '2026-01-25', '#ffcc00', 'top');
+    addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07', '#ff3333', 'middle');
+    addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12', '#33cc33', 'bottom');
+    addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13', '#3366ff', 'top');
 
     window.onload = () => {
       if (todayIndex !== null) {
