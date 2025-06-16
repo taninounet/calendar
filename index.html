@@ -20,42 +20,35 @@
     .day {
       position: relative;
       width: 100%;
-      aspect-ratio: 2 / 1;
       border-radius: 14px;
       background-color: #f2f2f2;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
       overflow: hidden;
+      height: 120px;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
     }
 
     .date-number {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding-right: 20px;
-      font-size: 100%;
-      height: 100%;
-      line-height: 1;
+      width: 50%;
+      font-size: 100px;
       color: white;
+      padding-right: 20px;
     }
 
     .month-label {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      padding-left: 20px;
-      font-size: 100%;
-      height: 100%;
-      line-height: 1;
-      color: #dddddd;
+      width: 50%;
+      font-size: 100px;
+      color: #e0e0e0;
       font-weight: bold;
+      padding-left: 20px;
     }
 
     .today {
@@ -125,6 +118,11 @@
         monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
         dayDiv.appendChild(monthLabel);
         monthTracker = date.getMonth();
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'month-label';
+        placeholder.textContent = '';
+        dayDiv.appendChild(placeholder);
       }
 
       const dateNum = document.createElement('div');
