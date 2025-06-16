@@ -17,19 +17,9 @@
       gap: 30px;
     }
 
-    .day {
-      position: relative;
-      border-radius: 14px;
-      background-color: #f2f2f2;
-      
-      display: flex;
-    z-index: 0;
-      align-items: stretch;
-      overflow: hidden;
-      justify-content: space-between;
-    box-shadow: inset 0 0 0 2px white;
-      width: calc((100vw - (6 * 30px) - 80px) / 7);
-      height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
+    $1
+      pointer-events: none;
+      z-index: 0;
     }
 
     .date-number {
@@ -88,7 +78,19 @@
       font-size: 14px;
       font-weight: bold;
     }
-  </style>
+    .day-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid white;
+    border-radius: 14px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+</style>
 </head>
 <body>
   <div class="calendar" id="calendar"></div>
