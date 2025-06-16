@@ -6,7 +6,7 @@
   <title>Sports Calendar</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
       margin: 40px;
     }
@@ -14,53 +14,66 @@
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 24px;
+      gap: 30px;
     }
 
     .day {
       position: relative;
-      height: 130px;
+      aspect-ratio: 1 / 1;
       border-radius: 14px;
-      background-color: #d3d3d3;
+      background-color: #f2f2f2;
       display: flex;
-      align-items: flex-end;
       justify-content: space-between;
+      align-items: flex-end;
       padding: 10px;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     }
 
     .date-number {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 32px;
+      font-weight: bold;
       color: white;
     }
 
     .month-label {
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 18px;
+      font-weight: bold;
       color: white;
-      text-shadow: 1px 1px 2px black;
+      background-color: black;
+      padding: 4px 8px;
+      border-radius: 6px;
     }
 
     .today {
-      border: 2px solid red;
+      border: 3px solid red;
     }
 
-    .event-bar {
+    .event-bar-span {
       position: absolute;
-      height: 18px;
-      background-color: rgba(168, 218, 220, 0.4);
+      height: 38px;
+      background-color: rgba(168, 218, 220, 0.5);
       border-radius: 10px;
+      top: 50%;
+      left: 0;
+      width: 100%;
       z-index: 0;
     }
 
-    .event-bar.final {
+    .event-bar-final {
+      position: absolute;
+      height: 38px;
       background-color: #a8dadc;
+      border-radius: 10px;
+      top: 50%;
+      left: 0;
+      width: 100%;
       z-index: 1;
-      text-align: left;
-      padding-left: 6px;
-      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: white;
+      font-size: 14px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -80,7 +93,6 @@
     }
 
     let monthTracker = -1;
-
     const dayRefs = [];
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -110,40 +122,37 @@
       dayRefs.push(dayDiv);
     }
 
-    function addEvent(startStr, endStr, label) {
+    function addEvent(label, startStr, endStr, finalStr) {
       const start = new Date(startStr);
       const end = new Date(endStr);
+      const final = new Date(finalStr);
       const indexStart = Math.floor((start - startDate) / (1000 * 3600 * 24));
       const indexEnd = Math.floor((end - startDate) / (1000 * 3600 * 24));
+      const indexFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
 
-      const bar = document.createElement('div');
-      bar.className = 'event-bar';
-      bar.style.gridColumn = `span ${indexEnd - indexStart}`;
-      bar.style.left = `${(indexStart % 7) * 100}%`;
-      bar.style.top = `${Math.floor(indexStart / 7) * 150}px`;
-      bar.style.width = `calc(${indexEnd - indexStart + 1} * (100% + 24px) - 24px)`;
-      dayRefs[indexStart].appendChild(bar);
+      for (let i = indexStart; i <= indexEnd; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'event-bar-span';
+        dayRefs[i].appendChild(bar);
+      }
 
       const finalBar = document.createElement('div');
-      finalBar.className = 'event-bar final';
+      finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
-      finalBar.style.width = '100%';
-      finalBar.style.bottom = '8px';
-      finalBar.style.left = '0';
-      dayRefs[indexEnd].appendChild(finalBar);
+      dayRefs[indexFinal].appendChild(finalBar);
     }
 
-    // 2025 Tennis Grand Slam events
-    addEvent('2025-01-13', '2025-01-26', 'Aus Open');
-    addEvent('2025-05-26', '2025-06-08', 'French Open');
-    addEvent('2025-06-30', '2025-07-13', 'Wimbledon');
-    addEvent('2025-08-25', '2025-09-07', 'US Open');
+    // Tennis Grand Slam Events 2025
+    addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26');
+    addEvent('French Open', '2025-05-26', '2025-06-08', '2025-06-08');
+    addEvent('Wimbledon', '2025-06-30', '2025-07-13', '2025-07-13');
+    addEvent('US Open', '2025-08-25', '2025-09-07', '2025-09-07');
 
-    // 2026 Tennis Grand Slam events
-    addEvent('2026-01-12', '2026-01-25', 'Aus Open');
-    addEvent('2026-05-25', '2026-06-07', 'French Open');
-    addEvent('2026-06-29', '2026-07-12', 'Wimbledon');
-    addEvent('2026-08-31', '2026-09-13', 'US Open');
+    // Tennis Grand Slam Events 2026
+    addEvent('Aus Open', '2026-01-12', '2026-01-25', '2026-01-25');
+    addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07');
+    addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12');
+    addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13');
   </script>
 </body>
 </html>
