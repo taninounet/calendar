@@ -19,7 +19,7 @@
 
     .day {
       position: relative;
-      aspect-ratio: 1 / 1;
+      height: 60px;
       border-radius: 14px;
       background-color: #f2f2f2;
       display: flex;
@@ -30,18 +30,20 @@
     }
 
     .date-number {
-      font-size: 32px;
+      font-size: 60px;
       font-weight: bold;
       color: white;
+      line-height: 1;
     }
 
     .month-label {
-      font-size: 18px;
+      font-size: 36px;
       font-weight: bold;
       color: white;
-      background-color: black;
-      padding: 4px 8px;
-      border-radius: 6px;
+      -webkit-text-stroke: 1px black;
+      text-stroke: 1px black;
+      text-fill-color: transparent;
+      -webkit-text-fill-color: transparent;
     }
 
     .today {
@@ -53,7 +55,7 @@
       height: 38px;
       background-color: rgba(168, 218, 220, 0.5);
       border-radius: 10px;
-      top: 50%;
+      top: 10px;
       left: 0;
       width: 100%;
       z-index: 0;
@@ -64,7 +66,7 @@
       height: 38px;
       background-color: #a8dadc;
       border-radius: 10px;
-      top: 50%;
+      top: 10px;
       left: 0;
       width: 100%;
       z-index: 1;
@@ -94,6 +96,7 @@
 
     let monthTracker = -1;
     const dayRefs = [];
+    let todayIndex = null;
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const date = new Date(d);
@@ -101,6 +104,7 @@
       dayDiv.className = 'day';
       if (isSameDay(date, today)) {
         dayDiv.classList.add('today');
+        todayIndex = dayRefs.length;
       }
 
       const dateNum = document.createElement('div');
@@ -153,6 +157,14 @@
     addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07');
     addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12');
     addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13');
+
+    // Scroll to today
+    window.onload = () => {
+      if (todayIndex !== null) {
+        const todayElem = dayRefs[todayIndex];
+        todayElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
   </script>
 </body>
 </html>
