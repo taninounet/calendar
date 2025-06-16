@@ -99,6 +99,12 @@
 
   <script>
     const calendar = document.getElementById('calendar');
+    calendar.style.position = 'relative';
+    const style = getComputedStyle(calendar);
+    const gap = parseFloat(style.gap);
+    const cellWidth = (calendar.clientWidth - gap * 6) / 7;
+    const cellHeight = cellWidth / 2;
+
     const startDate = new Date('2024-12-30');
     const endDate = new Date('2026-12-31');
     const today = new Date();
@@ -145,36 +151,50 @@
       dayRefs.push(dayDiv);
     }
 
-    // Step 1: extend addEvent signature to accept color and position
+    // Updated addEvent: continuous bar
     function addEvent(label, startStr, endStr, finalStr, color = '#a8dadc', position = 'top') {
       const start = new Date(startStr);
       const end = new Date(endStr);
-      const final = new Date(finalStr);
       const idxStart = Math.floor((start - startDate) / (1000 * 3600 * 24));
       const idxEnd = Math.floor((end   - startDate) / (1000 * 3600 * 24));
+
+      // Compute top offset based on position
+      const yOffsets = { top: 10, middle: cellHeight/3 + 10, bottom: 2*(cellHeight/3) + 10 };
+      const topOffset = yOffsets[position] || 10;
+
+      const span = document.createElement('div');
+      span.className = 'event-bar-span';
+      span.style.backgroundColor = color;
+      span.style.height = `${cellHeight/3}px`;
+      span.style.top = `${topOffset}px`;
+      span.style.left = `${idxStart*(cellWidth+gap)}px`;
+      span.style.width = `${(idxEnd - idxStart +1)*cellWidth + (idxEnd - idxStart)*gap}px`;
+      calendar.appendChild(span);
+
+      // Final label remains same cell
+      const final = new Date(finalStr);
       const idxFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
-
-      for (let i = idxStart; i <= idxEnd; i++) {
-        const bar = document.createElement('div');
-        bar.className = 'event-bar-span';
-        bar.style.setProperty('--event-color', color);
-        dayRefs[i].appendChild(bar);
-      }
-
       const finalBar = document.createElement('div');
       finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
       finalBar.style.backgroundColor = color;
-      dayRefs[idxFinal].appendChild(finalBar);
+      finalBar.style.height = `${cellHeight/3}px`;
+      finalBar.style.top = `${topOffset}px`;
+      finalBar.style.left = `${idxFinal*(cellWidth+gap)}px`;
+      finalBar.style.width = `${cellWidth}px`;
+      calendar.appendChild(finalBar);
     }
 
-    // Example calls (no visual change yet)
+    // Example calls
     addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26', '#ffcc00', 'top');
     addEvent('French Open','2025-05-26','2025-06-08','2025-06-08','#ff3333','middle');
     addEvent('Wimbledon','2025-06-30','2025-07-13','2025-07-13','#33cc33','bottom');
     addEvent('US Open','2025-08-25','2025-09-07','2025-09-07','#3366ff','top');
 
     window.onload = () => {
+      if (todayIndex !== null) dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+  </script> = () => {
       if (todayIndex !== null) dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
   </script>
