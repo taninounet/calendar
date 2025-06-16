@@ -19,31 +19,33 @@
 
     .day {
       position: relative;
-      height: 60px;
+      width: 100%;
+      aspect-ratio: 2 / 1;
       border-radius: 14px;
       background-color: #f2f2f2;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding: 10px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
     }
 
     .date-number {
-      font-size: 60px;
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      font-size: calc(50% + 1vw);
       font-weight: bold;
       color: white;
       line-height: 1;
     }
 
     .month-label {
-      font-size: 36px;
+      position: absolute;
+      bottom: 5px;
+      left: 10px;
+      font-size: calc(50% + 1vw);
       font-weight: bold;
-      color: white;
-      -webkit-text-stroke: 1px black;
-      text-stroke: 1px black;
-      text-fill-color: transparent;
-      -webkit-text-fill-color: transparent;
+      color: transparent;
+      -webkit-text-stroke: 1.5px black;
+      text-stroke: 1.5px black;
     }
 
     .today {
@@ -107,20 +109,18 @@
         todayIndex = dayRefs.length;
       }
 
-      const dateNum = document.createElement('div');
-      dateNum.className = 'date-number';
-      dateNum.textContent = date.getDate();
-      dayDiv.appendChild(dateNum);
-
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const monthLabel = document.createElement('div');
         monthLabel.className = 'month-label';
         monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
         dayDiv.appendChild(monthLabel);
         monthTracker = date.getMonth();
-      } else {
-        dayDiv.appendChild(document.createElement('div'));
       }
+
+      const dateNum = document.createElement('div');
+      dateNum.className = 'date-number';
+      dateNum.textContent = date.getDate();
+      dayDiv.appendChild(dateNum);
 
       calendar.appendChild(dayDiv);
       dayRefs.push(dayDiv);
