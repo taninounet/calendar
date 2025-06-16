@@ -25,33 +25,33 @@
       background-color: #f2f2f2;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
       overflow: hidden;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
     }
 
     .date-number {
-      height: 100%;
-      width: 50%;
-      font-size: calc(1.6 * 100%);
-      line-height: 1;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: flex-end;
-      padding-right: 12px;
+      padding-right: 20px;
+      font-size: calc(1.8 * (100% + 1vw));
       color: white;
     }
 
     .month-label {
-      height: 100%;
-      width: 50%;
-      font-size: calc(1.6 * 100%);
-      line-height: 1;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: flex-start;
-      padding-left: 12px;
-      color: #999;
+      padding-left: 20px;
+      font-size: calc(1.8 * (100% + 1vw));
+      color: #777;
+      font-weight: bold;
     }
 
     .today {
@@ -121,11 +121,6 @@
         monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
         dayDiv.appendChild(monthLabel);
         monthTracker = date.getMonth();
-      } else {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'month-label';
-        placeholder.textContent = '';
-        dayDiv.appendChild(placeholder);
       }
 
       const dateNum = document.createElement('div');
@@ -174,7 +169,8 @@
       setTimeout(() => {
         if (todayIndex !== null) {
           const todayElem = dayRefs[todayIndex];
-          todayElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const top = todayElem.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: top - window.innerHeight / 2, behavior: 'smooth' });
         }
       }, 100);
     };
