@@ -12,6 +12,12 @@
       position: relative;
     }
 
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 30px;
+    }
+
     .day {
       outline: 1px solid white;
       outline-offset: -1px;
@@ -24,12 +30,6 @@
       justify-content: space-between;
       width: calc((100vw - (6 * 30px) - 80px) / 7);
       height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
-    }
-
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 30px;
     }
 
     .date-number {
@@ -67,8 +67,10 @@
 
     .event-bar-span {
       position: absolute;
+      height: 38px;
       background-color: var(--event-color, rgba(168, 218, 220, 0.5));
       border-radius: 10px;
+      top: 10px;
       left: 0;
       width: 100%;
       z-index: 0;
@@ -111,6 +113,7 @@
     const dayRefs = [];
     let todayIndex = null;
 
+    // Build calendar grid
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const date = new Date(d);
       const dayDiv = document.createElement('div');
@@ -142,6 +145,7 @@
       dayRefs.push(dayDiv);
     }
 
+    // Step 1: extend addEvent signature to accept color and position
     function addEvent(label, startStr, endStr, finalStr, color = '#a8dadc', position = 'top') {
       const start = new Date(startStr);
       const end = new Date(endStr);
@@ -150,19 +154,10 @@
       const idxEnd = Math.floor((end   - startDate) / (1000 * 3600 * 24));
       const idxFinal = Math.floor((final - startDate) / (1000 * 3600 * 24));
 
-      const barHeight = (dayRefs[0].offsetHeight - 20) / 3; // fit three bars with 10px padding
-      const positionY = {
-        top: 10,
-        middle: 10 + barHeight + 5,
-        bottom: 10 + 2 * (barHeight + 5)
-      }[position] || 10;
-
       for (let i = idxStart; i <= idxEnd; i++) {
         const bar = document.createElement('div');
         bar.className = 'event-bar-span';
         bar.style.setProperty('--event-color', color);
-        bar.style.height = `${barHeight}px`;
-        bar.style.top = `${positionY}px`;
         dayRefs[i].appendChild(bar);
       }
 
@@ -170,33 +165,17 @@
       finalBar.className = 'event-bar-final';
       finalBar.textContent = label;
       finalBar.style.backgroundColor = color;
-      finalBar.style.height = `${barHeight}px`;
-      finalBar.style.top = `${positionY}px`;
       dayRefs[idxFinal].appendChild(finalBar);
     }
 
-      const finalBar = document.createElement('div');
-      finalBar.className = 'event-bar-final';
-      finalBar.textContent = label;
-      dayRefs[idxFinal].appendChild(finalBar);
-    }
-
-        // Tennis Grand Slam Events 2025
+    // Example calls (no visual change yet)
     addEvent('Aus Open', '2025-01-13', '2025-01-26', '2025-01-26', '#ffcc00', 'top');
-    addEvent('French Open', '2025-05-26', '2025-06-08', '2025-06-08', '#ff3333', 'middle');
-    addEvent('Wimbledon', '2025-06-30', '2025-07-13', '2025-07-13', '#33cc33', 'bottom');
-    addEvent('US Open', '2025-08-25', '2025-09-07', '2025-09-07', '#3366ff', 'top');
-
-    // Tennis Grand Slam Events 2026
-    addEvent('Aus Open', '2026-01-12', '2026-01-25', '2026-01-25', '#ffcc00', 'top');
-    addEvent('French Open', '2026-05-25', '2026-06-07', '2026-06-07', '#ff3333', 'middle');
-    addEvent('Wimbledon', '2026-06-29', '2026-07-12', '2026-07-12', '#33cc33', 'bottom');
-    addEvent('US Open', '2026-08-31', '2026-09-13', '2026-09-13', '#3366ff', 'top');
+    addEvent('French Open','2025-05-26','2025-06-08','2025-06-08','#ff3333','middle');
+    addEvent('Wimbledon','2025-06-30','2025-07-13','2025-07-13','#33cc33','bottom');
+    addEvent('US Open','2025-08-25','2025-09-07','2025-09-07','#3366ff','top');
 
     window.onload = () => {
-      if (todayIndex !== null) {
-        dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (todayIndex !== null) dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
   </script>
 </body>
