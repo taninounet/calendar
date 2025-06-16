@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: white;
+      margin: 20px;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .day {
+      position: relative;
+      height: 100px;
+      border-radius: 12px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+      background-color: #f9f9f9;
+      padding: 5px;
+    }
+
+    .day span.date {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .event-strip {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      right: 5px;
+      height: 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: white;
+      padding-left: 5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .tennis-final {
+      background-color: #a8dadc; /* pastel blue */
+    }
+
+    .tennis-leadup {
+      background-color: rgba(168, 218, 220, 0.5);
+    }
+
+  </style>
+</head>
+<body>
+  <h1>🏅 Sports Calendar</h1>
+  <div class="calendar">
+    <!-- Week example for June 2024 -->
+    <div class="day"><span class="date">Jun 9</span></div>
+    <div class="day"><span class="date">Jun 10</span><div class="event-strip tennis-leadup">French Open</div></div>
+    <div class="day"><span class="date">Jun 11</span><div class="event-strip tennis-leadup">French Open</div></div>
+    <div class="day"><span class="date">Jun 12</span><div class="event-strip tennis-leadup">French Open</div></div>
+    <div class="day"><span class="date">Jun 13</span><div class="event-strip tennis-leadup">French Open</div></div>
+    <div class="day"><span class="date">Jun 14</span><div class="event-strip tennis-leadup">French Open</div></div>
+    <div class="day"><span class="date">Jun 15</span><div class="event-strip tennis-final">Final</div></div>
+  </div>
+</body>
+</html>
