@@ -12,6 +12,19 @@
       position: relative;
     }
 
+    .day {
+      position: relative;
+      border-radius: 14px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      justify-content: space-between;
+      width: calc((100vw - (6 * 30px) - 80px) / 7);
+      height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
+    }
+
+    /* White border overlay */
     .day::after {
       content: "";
       position: absolute;
@@ -22,7 +35,7 @@
       border: 2px solid white;
       border-radius: 14px;
       pointer-events: none;
-      z-index: 3;
+      z-index: 2;
     }
 
     .calendar {
@@ -31,39 +44,38 @@
       gap: 30px;
     }
 
-    .day {
-      position: relative;
-      border-radius: 14px;
-      background-color: #dddddd;
+    .date-number {
       display: flex;
-      z-index: 0;
-      align-items: stretch;
-      overflow: hidden;
-      justify-content: space-between;
-      width: calc((100vw - (6 * 30px) - 80px) / 7);
-      height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
+      align-items: center;
+      justify-content: flex-end;
+      width: 50%;
+      height: 100%;
+      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.3);
+      color: white;
+      padding-right: 20px;
+      line-height: 1;
+      /* white text stroke for outline */
+      -webkit-text-stroke: 1px white;
     }
 
     .month-label {
-      -webkit-text-stroke: 1px #dddddd;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       width: 50%;
       height: 100%;
-      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.25);
+      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.3);
       color: #dddddd;
       font-weight: bold;
       padding-left: 20px;
       line-height: 1;
-    }
-
-    $1line-height: 1;
-      margin-bottom: 2px;
+      /* matching text stroke */
+      -webkit-text-stroke: 1px #dddddd;
     }
 
     .today {
       border: 3px solid red;
+      z-index: 3;
     }
 
     .event-bar-span {
