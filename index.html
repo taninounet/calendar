@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sports Calendar with Events</title>
+  <title>MyCalendar</title>
   <style>
     html, body {
       margin: 0;
@@ -94,6 +94,7 @@
   <!-- PapaParse for CSV parsing -->
   <script src="https://unpkg.com/papaparse@5.4.0/papaparse.min.js"></script>
   <script>
+    // Replace with your own published-sheet URL
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1-BXJeThwQauOF5FsPrXrcMgxzOTVK2C-kB5dUIp6D4k/export?format=csv&gid=0';
 
     const calendar  = document.getElementById('calendar');
@@ -145,17 +146,20 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
+    // load & parse your sheet; filter by visible flag
     async function loadEventsFromSheet() {
       const csvText = await fetch(SHEET_CSV_URL, { cache: 'no-cache' }).then(r => r.text());
       const { data } = Papa.parse(csvText, { header: true });
-      return data.map(e => ({
-        name:      e.name,
-        color:     e.color,
-        textColor: e.textColor,
-        start:     new Date(e.start),
-        end:       new Date(e.end),
-        lane:      e.lane
-      }));
+      return data
+        .filter(e => (e.visible || '').toLowerCase() === 'yes')
+        .map(e => ({
+          name:      e.name,
+          color:     e.color,
+          textColor: e.textColor,
+          start:     new Date(e.start),
+          end:       new Date(e.end),
+          lane:      e.lane
+        }));
     }
 
     function renderEvents() {
@@ -179,6 +183,7 @@
           const eEl = dayRefs[e].el.getBoundingClientRect();
           const y   = laneY[lanes[evt.lane]];
 
+          // translucent bar
           const bar = document.createElement('div');
           bar.className = 'event-bar';
           bar.style.left   = `${sEl.left - cw.left}px`;
@@ -188,6 +193,7 @@
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
+          // final colored label only on last segment
           if (w === ew) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
