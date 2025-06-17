@@ -11,14 +11,12 @@
       padding: 0 40px;
       position: relative;
     }
-
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 30px;
       position: relative;
     }
-
     .day {
       outline: 1px solid white;
       outline-offset: -1px;
@@ -32,7 +30,6 @@
       width: calc((100vw - (6 * 30px) - 80px) / 7);
       height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
     }
-
     .date-number, .month-label {
       width: 50%;
       height: 100%;
@@ -54,7 +51,6 @@
       padding-left: 20px;
       -webkit-text-stroke-color: #dddddd;
     }
-
     .today {
       border: 3px solid red;
       z-index: 4;
@@ -72,25 +68,23 @@
       pointer-events: none;
       z-index: 5;
       line-height: 1;
-      /* no more transform here! */
     }
     .event-bar { }
     .event-final {
       font-weight: normal;
-      font-size: 0.9em;    /* base for spans */
-      color: black;
+      font-size: 0.9em;  /* base size for spans */
+      /* color will be set per-event via JS */
     }
     .event-final span {
       display: inline-block;
       vertical-align: baseline;
-      /* nudge only the text down */
-      transform: translateY(15%);
+      transform: translateY(30%);
     }
     .big-letter {
       font-size: 1.6em;
     }
     .small-letter {
-      font-size: 1.2em;    /* keep your larger small caps */
+      font-size: 1.2em;
     }
   </style>
 </head>
@@ -107,20 +101,18 @@
       return d1.toDateString() === d2.toDateString();
     }
 
+    // Build calendar grid
     let monthTracker = -1;
     const dayRefs = [];
     let todayIndex = null;
-
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const date = new Date(d);
       const dayDiv = document.createElement('div');
       dayDiv.className = 'day';
-
       if (isSameDay(date, today)) {
         dayDiv.classList.add('today');
         todayIndex = dayRefs.length;
       }
-
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const lbl = document.createElement('div');
         lbl.className = 'month-label';
@@ -132,7 +124,6 @@
         placeholder.className = 'month-label';
         dayDiv.appendChild(placeholder);
       }
-
       const dateNum = document.createElement('div');
       dateNum.className = 'date-number';
       dateNum.textContent = date.getDate();
@@ -150,15 +141,16 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
+    // Add `textColor` to each event (currently all "#000000")
     const events = [
-      { name: "Wimbledon Final",        color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
-      { name: "Roland Garros Final",    color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "middle" },
-      { name: "Australian Open Final",  color: "#FDFD96", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "top" },
-      { name: "US Open Final",          color: "#AEC6CF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "top" },
-      { name: "Australian Open Final",  color: "#B39EB5", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "middle" },
-      { name: "Roland Garros Final",    color: "#FFB347", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",        color: "#FF6961", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "top" },
-      { name: "US Open Final",          color: "#CFCFC4", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "middle" }
+      { name: "Wimbledon Final",        color: "#77DD77", textColor: "#000000", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
+      { name: "Roland Garros Final",    color: "#FFD1DC", textColor: "#000000", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "middle" },
+      { name: "Australian Open Final",  color: "#FDFD96", textColor: "#000000", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "top" },
+      { name: "US Open Final",          color: "#AEC6CF", textColor: "#000000", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "top" },
+      { name: "Australian Open Final",  color: "#B39EB5", textColor: "#000000", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "middle" },
+      { name: "Roland Garros Final",    color: "#FFB347", textColor: "#000000", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",        color: "#FF6961", textColor: "#000000", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "top" },
+      { name: "US Open Final",          color: "#CFCFC4", textColor: "#000000", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "middle" }
     ];
 
     function renderEvents() {
@@ -177,10 +169,10 @@
         const startWeek = Math.floor(si/7), endWeek = Math.floor(ei/7);
 
         for (let w = startWeek; w <= endWeek; w++) {
-          const segStart = w === startWeek ? si : w*7;
-          const segEnd   = w === endWeek   ? ei : w*7 + 6;
+          const segStart = (w === startWeek ? si : w*7);
+          const segEnd   = (w === endWeek   ? ei : w*7 + 6);
           const sEl = dayRefs[segStart].el.getBoundingClientRect();
-          const eEl = dayRefs[segEnd].el.getBoundingClientRect();
+          const eEl = dayRefs[segEnd  ].el.getBoundingClientRect();
           const y   = laneY[ lanes[evt.lane] ];
 
           // translucent background
@@ -202,6 +194,7 @@
             fin.style.width  = cell0.width + 'px';
             fin.style.height = laneH + 'px';
             fin.style.backgroundColor = evt.color;
+            fin.style.color = evt.textColor; // apply per-event text color
 
             let html = '';
             for (let ch of evt.name) {
