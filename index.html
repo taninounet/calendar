@@ -65,7 +65,8 @@
       position: absolute;
       border-radius: 6px;
       display: flex;
-      align-items: center;
+      /* align spans on a shared baseline now */
+      align-items: baseline;
       justify-content: center;
       font-family: Futura, Helvetica, sans-serif;
       text-transform: uppercase;
@@ -83,7 +84,7 @@
     }
     .event-final span {
       display: inline-block;
-      vertical-align: middle;
+      vertical-align: baseline;
     }
     .big-letter {
       font-size: 1.6em;
