@@ -142,41 +142,47 @@
 
     const events = [
 
-      { name: "Super Cup Final",           color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top" },
-      { name: "Telekom Cup",               color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-07"), end: new Date("2025-08-07"), lane: "top" },
+      { name: "Champions League Final",     color: "#132257", textColor: "#fed56a", start: new Date("2025-05-31"), end: new Date("2025-05-31"), lane: "top" },
+
+      { name: "Super Cup Final",            color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top" },
+      { name: "Telekom Cup",                color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-07"), end: new Date("2025-08-07"), lane: "top" },
       
-      { name: "Community Shield",          color: "#e4051f", textColor: "#fdc513", start: new Date("2025-08-10"), end: new Date("2025-08-10"), lane: "top" }, 
-      { name: "Gameweek #1",               color: "#3d195b", textColor: "#FFFFFF", start: new Date("2025-08-16"), end: new Date("2025-08-16"), lane: "top" }, 
-      { name: "World Rapid Championship",  color: "#334166", textColor: "#FFFFFF", start: new Date("2025-12-26"), end: new Date("2025-12-28"), lane: "bottom" },
-      { name: "World Blitz Championship",  color: "#334166", textColor: "#FFFFFF", start: new Date("2025-12-29"), end: new Date("2025-12-30"), lane: "bottom" },
-      { name: "League of Legends Worlds",  color: "#000000", textColor: "#c79b3b", start: new Date("2025-10-25"), end: new Date("2025-11-02"), lane: "bottom" },
+      { name: "Community Shield",           color: "#e4051f", textColor: "#fdc513", start: new Date("2025-08-10"), end: new Date("2025-08-10"), lane: "top" }, 
+      { name: "Gameweek #1",                color: "#3d195b", textColor: "#FFFFFF", start: new Date("2025-08-16"), end: new Date("2025-08-16"), lane: "top" }, 
+      { name: "World Rapid Championship",   color: "#334166", textColor: "#FFFFFF", start: new Date("2025-12-26"), end: new Date("2025-12-28"), lane: "bottom" },
+      { name: "World Blitz Championship",   color: "#334166", textColor: "#FFFFFF", start: new Date("2025-12-29"), end: new Date("2025-12-30"), lane: "bottom" },
+      { name: "League of Legends Worlds",   color: "#000000", textColor: "#c79b3b", start: new Date("2025-10-25"), end: new Date("2025-11-02"), lane: "bottom" },
 
       // Grand Slams 2025
-      { name: "Australian Open Final",     color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "bottom" },
-      { name: "Roland Garros Final",       color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
-      { name: "Wimbledon Final",           color: "#007649", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
-      { name: "US Open Final",             color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "bottom" },
-      { name: "Australian Open SF",        color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-30"), end: new Date("2025-01-30"), lane: "bottom" },
-      { name: "Roland Garros SF",          color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-06-06"), end: new Date("2025-06-06"), lane: "bottom" },
-      { name: "Wimbledon SF",              color: "#007649", textColor: "#FFFFFF", start: new Date("2025-07-11"), end: new Date("2025-07-11"), lane: "bottom" },
-      { name: "US Open SF",                color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-09-05"), end: new Date("2025-09-05"), lane: "bottom" },
+      { name: "Australian Open Final",      color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "bottom" },
+      { name: "Roland Garros Final",        color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
+      { name: "Wimbledon Final",            color: "#007649", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
+      { name: "US Open Final",              color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "bottom" },
+      { name: "Australian Open SF",         color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-30"), end: new Date("2025-01-30"), lane: "bottom" },
+      { name: "Roland Garros SF",           color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-06-06"), end: new Date("2025-06-06"), lane: "bottom" },
+      { name: "Wimbledon SF",               color: "#007649", textColor: "#FFFFFF", start: new Date("2025-07-11"), end: new Date("2025-07-11"), lane: "bottom" },
+      { name: "US Open SF",                 color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-09-05"), end: new Date("2025-09-05"), lane: "bottom" },
 
       // Grand Slams 2026
-      { name: "Australian Open Final",     color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
-      { name: "Roland Garros Final",       color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",           color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
-      { name: "US Open Final",             color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
-      { name: "Australian Open SF",        color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-29"), end: new Date("2026-01-29"), lane: "bottom" },
-      { name: "Roland Garros SF",          color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-06-05"), end: new Date("2026-06-05"), lane: "bottom" },
-      { name: "Wimbledon SF",              color: "#007649", textColor: "#FFFFFF", start: new Date("2026-07-10"), end: new Date("2026-07-10"), lane: "bottom" },
-      { name: "US Open SF",                color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-09-11"), end: new Date("2026-09-11"), lane: "bottom" },
+      { name: "Australian Open Final",      color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
+      { name: "Roland Garros Final",        color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",            color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
+      { name: "US Open Final",              color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
+      { name: "Australian Open SF",         color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-29"), end: new Date("2026-01-29"), lane: "bottom" },
+      { name: "Roland Garros SF",           color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-06-05"), end: new Date("2026-06-05"), lane: "bottom" },
+      { name: "Wimbledon SF",               color: "#007649", textColor: "#FFFFFF", start: new Date("2026-07-10"), end: new Date("2026-07-10"), lane: "bottom" },
+      { name: "US Open SF",                 color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-09-11"), end: new Date("2026-09-11"), lane: "bottom" },
   
       // Club World Cup 2025
-      { name: "Club World Cup Final",      color: "#fed56a", textColor: "#000000", start: new Date("2025-06-14"), end: new Date("2025-07-13"), lane: "top" },
-      { name: "Club World Cup SF",         color: "#fed56a", textColor: "#000000", start: new Date("2025-07-09"), end: new Date("2025-07-09"), lane: "top" },
-      { name: "Club World Cup SF",         color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "top" },
-      { name: "Club World Cup QF",         color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "top" },
-      { name: "Club World Cup QF",         color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "top" },
+      { name: "Club World Cup Final",       color: "#fed56a", textColor: "#000000", start: new Date("2025-06-14"), end: new Date("2025-07-13"), lane: "top" },
+      { name: "Club World Cup SF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-07-09"), end: new Date("2025-07-09"), lane: "top" },
+      { name: "Club World Cup SF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "top" },
+      { name: "Club World Cup QF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "top" },
+      { name: "Club World Cup QF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "top" },
+      
+      { name: "Nations League Final",       color: "#fed56a", textColor: "#000000", start: new Date("2025-06-04"), end: new Date("2025-07-08"), lane: "top" },
+      { name: "Nations League SF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-06-04"), end: new Date("2025-06-04"), lane: "top" },
+      { name: "Nations League SF",          color: "#fed56a", textColor: "#000000", start: new Date("2025-06-05"), end: new Date("2025-06-05"), lane: "top" },
     
       // ATP Masters 1000 2025
       { name: "Indian Wells Masters Final", color: "#e6ebf0", textColor: "#002866", start: new Date("2025-03-16"), end: new Date("2025-03-16"), lane: "bottom" },
