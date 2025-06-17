@@ -190,4 +190,54 @@
           const y   = laneY[ lanes[evt.lane] || 0 ];
 
           // translucent span (no text)
-          const
+          const bar = document.createElement('div');
+          bar.className = 'event-bar';
+          bar.style.left   = (sEl.left   - cw.left) + 'px';
+          bar.style.top    = (sEl.top    - cw.top  + y) + 'px';
+          bar.style.width  = (eEl.right  - sEl.left) + 'px';
+          bar.style.height = laneH + 'px';
+          bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
+          calendar.appendChild(bar);
+
+          // final-day solid + text
+          if (w === endWeek) {
+            const fin = document.createElement('div');
+            fin.className = 'event-final';
+            fin.style.left   = (eEl.left - cw.left) + 'px';
+            fin.style.top    = (eEl.top  - cw.top  + y) + 'px';
+            fin.style.width  = cell0.width + 'px';
+            fin.style.height = laneH + 'px';
+            fin.style.backgroundColor = evt.color;
+
+            // wrap every A–Z in .big-letter
+            const txt = evt.name.toUpperCase();
+            fin.innerHTML = txt.split('').map(ch => {
+              return /[A-Z]/.test(ch)
+                ? `<span class="big-letter">${ch}</span>`
+                : ch;
+            }).join('');
+
+            calendar.appendChild(fin);
+          }
+        }
+      });
+    }
+
+    window.onload = () => {
+      // scroll to today
+      setTimeout(() => {
+        if (todayIndex != null) {
+          const te = dayRefs[todayIndex].el.getBoundingClientRect();
+          window.scrollTo({
+            top: te.top + window.scrollY - window.innerHeight / 2,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+
+      // draw events
+      renderEvents();
+    };
+  </script>
+</body>
+</html>
