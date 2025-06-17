@@ -33,35 +33,29 @@
       height: calc(((100vw - (6 * 30px) - 80px) / 7) / 2);
     }
 
-    .date-number {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
+    .date-number, .month-label {
       width: 50%;
       height: 100%;
-      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.3);
-      color: white;
-      padding-right: 20px;
+      display: flex;
+      align-items: center;
       line-height: 1;
+      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.3);
       -webkit-text-stroke: 1px white;
     }
-
+    .date-number {
+      justify-content: flex-end;
+      color: white;
+      padding-right: 20px;
+    }
     .month-label {
-      display: flex;
-      align-items: center;
       justify-content: flex-start;
-      width: 50%;
-      height: 100%;
-      font-size: calc(((100vw - (6 * 30px) - 80px) / 7) / 2 * 1.3);
       color: #dddddd;
       font-weight: bold;
       padding-left: 20px;
-      line-height: 1;
-      -webkit-text-stroke: 1px #dddddd;
+      -webkit-text-stroke-color: #dddddd;
     }
 
     .today {
-      position: relative;
       border: 3px solid red;
       z-index: 4;
     }
@@ -73,38 +67,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: Futura, Helvetica, sans-serif;
-      text-transform: uppercase;
+      text-transform: uppercase;  /* force uppercase */
       pointer-events: none;
       z-index: 5;
       line-height: 1;
     }
-
     .event-bar {
-      /* no text here */
+      /* translucent background only */
     }
-
     .event-final {
-      /* normal weight */
       font-weight: normal;
-      /* base font-size for small letters */
+      /* base font-size – big letters will be 1em, small letters smaller */
       font-size: 1em;
     }
-
-    /* ensure all letters sit on the same baseline */
     .event-final span {
       display: inline-block;
-      vertical-align: bottom;
+      vertical-align: middle;
     }
-
-    /* big letters (input capitals) */
     .big-letter {
-      font-size: 1.6em;
+      font-size: 1em;   /* same as base */
     }
-
-    /* small letters (input lowercase) made larger */
     .small-letter {
-      font-size: 1.2em;
+      font-size: 0.7em; /* smaller for originally lowercase */
     }
   </style>
 </head>
@@ -136,11 +120,12 @@
         todayIndex = dayRefs.length;
       }
 
+      // month label or blank
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
-        const monthLabel = document.createElement('div');
-        monthLabel.className = 'month-label';
-        monthLabel.textContent = date.toLocaleString('en-US', { month: 'short' });
-        dayDiv.appendChild(monthLabel);
+        const lbl = document.createElement('div');
+        lbl.className = 'month-label';
+        lbl.textContent = date.toLocaleString('en-US', { month: 'short' });
+        dayDiv.appendChild(lbl);
         monthTracker = date.getMonth();
       } else {
         const placeholder = document.createElement('div');
@@ -148,6 +133,7 @@
         dayDiv.appendChild(placeholder);
       }
 
+      // day number
       const dateNum = document.createElement('div');
       dateNum.className = 'date-number';
       dateNum.textContent = date.getDate();
@@ -157,40 +143,43 @@
       dayRefs.push({ el: dayDiv, date: new Date(date) });
     }
 
-    // Helpers
     function hexToRgba(hex, a) {
       const [r,g,b] = [1,3,5].map(i => parseInt(hex.substr(i,2),16));
       return `rgba(${r},${g},${b},${a})`;
     }
-
     function findIndexByDate(dt) {
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // Sample events with textColor variable
+    // Now with fontColor and new text‐logic
     const events = [
       {
         name: "Wimbledon Final",
         color: "#77DD77",
-        textColor: "#000000",
+        fontColor: "#003300",
         start: new Date("2025-06-30"),
         end:   new Date("2025-07-13"),
-        final: new Date("2025-07-13"),
-        lane: "bottom"
+        lane:  "bottom"
       },
       {
         name: "Roland Garros Final",
         color: "#FFD1DC",
-        textColor: "#000000",
+        fontColor: "#660000",
         start: new Date("2025-05-25"),
         end:   new Date("2025-06-08"),
-        final: new Date("2025-06-08"),
-        lane: "middle"
+        lane:  "middle"
       },
-      /* … other events … */
+      {
+        name: "Australian Open Final",
+        color: "#FDFD96",
+        fontColor: "#333300",
+        start: new Date("2025-01-20"),
+        end:   new Date("2025-02-02"),
+        lane:  "top"
+      },
+      // …and so on for each event, giving each a `fontColor`
     ];
 
-    // Render events (split across weeks)
     function renderEvents() {
       const cw    = calendar.getBoundingClientRect();
       const cell0 = dayRefs[0].el.getBoundingClientRect();
@@ -204,54 +193,51 @@
         const ei = findIndexByDate(evt.end);
         if (si < 0 || ei < 0) return;
 
-        const startWeek = Math.floor(si / 7);
-        const endWeek   = Math.floor(ei / 7);
+        const startWeek = Math.floor(si/7), endWeek = Math.floor(ei/7);
 
         for (let w = startWeek; w <= endWeek; w++) {
-          const segStart = (w === startWeek ? si : w * 7);
-          const segEnd   = (w === endWeek   ? ei : w * 7 + 6);
-
+          const segStart = (w === startWeek ? si : w*7);
+          const segEnd   = (w === endWeek   ? ei : w*7 + 6);
           const sEl = dayRefs[segStart].el.getBoundingClientRect();
           const eEl = dayRefs[segEnd  ].el.getBoundingClientRect();
-          const y   = laneY[ lanes[evt.lane] || 0 ];
+          const y   = laneY[ lanes[evt.lane] ];
 
-          // translucent span
+          // translucent bar
           const bar = document.createElement('div');
           bar.className = 'event-bar';
-          bar.style.left            = (sEl.left   - cw.left) + 'px';
-          bar.style.top             = (sEl.top    - cw.top  + y) + 'px';
-          bar.style.width           = (eEl.right  - sEl.left) + 'px';
-          bar.style.height          = laneH + 'px';
+          bar.style.left   = (sEl.left - cw.left) + 'px';
+          bar.style.top    = (sEl.top  - cw.top  + y) + 'px';
+          bar.style.width  = (eEl.right  - sEl.left) + 'px';
+          bar.style.height = laneH + 'px';
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
-          // final-day solid + styled text
+          // final day: solid + text
           if (w === endWeek) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
-            fin.style.left            = (eEl.left - cw.left) + 'px';
-            fin.style.top             = (eEl.top  - cw.top  + y) + 'px';
-            fin.style.width           = cell0.width + 'px';
-            fin.style.height          = laneH + 'px';
+            fin.style.left   = (eEl.left  - cw.left) + 'px';
+            fin.style.top    = (eEl.top   - cw.top  + y) + 'px';
+            fin.style.width  = cell0.width + 'px';
+            fin.style.height = laneH + 'px';
             fin.style.backgroundColor = evt.color;
-            fin.style.color           = evt.textColor;
+            fin.style.color = evt.fontColor || '#000';  // <-- customizable
 
-            // uppercase input, wrap only actual input-capitals
-            const original = evt.name;
-            let out = '';
-            for (let ch of original) {
+            // rebuild text: all uppercase, but originally-lowercase -> smaller
+            let html = '';
+            for (let ch of evt.name) {
               if (ch === ' ') {
-                out += ' ';
+                html += '&nbsp;';
+                continue;
+              }
+              const up = ch.toUpperCase();
+              if (/[A-Z]/.test(ch)) {
+                html += `<span class="big-letter">${up}</span>`;
               } else {
-                const up = ch.toUpperCase();
-                if (ch === up && /[A-Z]/.test(ch)) {
-                  out += `<span class="big-letter">${up}</span>`;
-                } else {
-                  out += `<span class="small-letter">${up}</span>`;
-                }
+                html += `<span class="small-letter">${up}</span>`;
               }
             }
-            fin.innerHTML = out;
+            fin.innerHTML = html;
             calendar.appendChild(fin);
           }
         }
@@ -263,7 +249,7 @@
         if (todayIndex != null) {
           const te = dayRefs[todayIndex].el.getBoundingClientRect();
           window.scrollTo({
-            top: te.top + window.scrollY - window.innerHeight / 2,
+            top: te.top + window.scrollY - window.innerHeight/2,
             behavior: 'smooth'
           });
         }
