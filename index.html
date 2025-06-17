@@ -140,10 +140,13 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // all events: Grand Slams, Club WC, plus ATP Masters 1000, Laver Cup, ATP Finals for 2025 & 2026
     const events = [
 
       { name: "Super Cup Final",           color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top" },
+      { name: "PSG vs TOT",                color: "#FFFFFF", textColor: "#132257", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "middle" },      
+      { name: "Telekom Cup",               color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-07"), end: new Date("2025-08-07"), lane: "middle" },
+      { name: "BAY vs TOT",                color: "#FFFFFF", textColor: "#132257", start: new Date("2025-08-07"), end: new Date("2025-08-07"), lane: "middle" },
+      
       { name: "Community Shield",          color: "#e4051f", textColor: "#fdc513", start: new Date("2025-08-10"), end: new Date("2025-08-10"), lane: "top" }, 
       { name: "Gameweek #1",               color: "#3d195b", textColor: "#FFFFFF", start: new Date("2025-08-16"), end: new Date("2025-08-16"), lane: "top" }, 
       { name: "World Rapid Championship",  color: "#334166", textColor: "#FFFFFF", start: new Date("2025-12-26"), end: new Date("2025-12-28"), lane: "bottom" },
