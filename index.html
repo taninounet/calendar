@@ -67,7 +67,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      text-transform: uppercase;  /* force uppercase */
+      font-family: Futura, Helvetica, sans-serif;
+      text-transform: uppercase;
       pointer-events: none;
       z-index: 5;
       line-height: 1;
@@ -77,18 +78,18 @@
     }
     .event-final {
       font-weight: normal;
-      /* base font-size – big letters will be 1em, small letters smaller */
-      font-size: 1em;
+      font-size: 0.9em;    /* base size for spans */
+      color: black;        /* always black */
     }
     .event-final span {
       display: inline-block;
       vertical-align: middle;
     }
     .big-letter {
-      font-size: 1em;   /* same as base */
+      font-size: 1.6em;
     }
     .small-letter {
-      font-size: 0.7em; /* smaller for originally lowercase */
+      font-size: 1em;
     }
   </style>
 </head>
@@ -120,7 +121,6 @@
         todayIndex = dayRefs.length;
       }
 
-      // month label or blank
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const lbl = document.createElement('div');
         lbl.className = 'month-label';
@@ -133,7 +133,6 @@
         dayDiv.appendChild(placeholder);
       }
 
-      // day number
       const dateNum = document.createElement('div');
       dateNum.className = 'date-number';
       dateNum.textContent = date.getDate();
@@ -151,33 +150,16 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // Now with fontColor and new text‐logic
+    // ALL eight of your original events, with `final` preserved
     const events = [
-      {
-        name: "Wimbledon Final",
-        color: "#77DD77",
-        fontColor: "#003300",
-        start: new Date("2025-06-30"),
-        end:   new Date("2025-07-13"),
-        lane:  "bottom"
-      },
-      {
-        name: "Roland Garros Final",
-        color: "#FFD1DC",
-        fontColor: "#660000",
-        start: new Date("2025-05-25"),
-        end:   new Date("2025-06-08"),
-        lane:  "middle"
-      },
-      {
-        name: "Australian Open Final",
-        color: "#FDFD96",
-        fontColor: "#333300",
-        start: new Date("2025-01-20"),
-        end:   new Date("2025-02-02"),
-        lane:  "top"
-      },
-      // …and so on for each event, giving each a `fontColor`
+      { name: "Wimbledon Final",        color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), final: new Date("2025-07-13"), lane: "bottom" },
+      { name: "Roland Garros Final",    color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), final: new Date("2025-06-08"), lane: "middle" },
+      { name: "Australian Open Final",  color: "#FDFD96", start: new Date("2025-01-20"), end: new Date("2025-02-02"), final: new Date("2025-02-02"), lane: "top" },
+      { name: "US Open Final",          color: "#AEC6CF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), final: new Date("2025-09-07"), lane: "top" },
+      { name: "Australian Open Final",  color: "#B39EB5", start: new Date("2026-01-19"), end: new Date("2026-02-01"), final: new Date("2026-02-01"), lane: "middle" },
+      { name: "Roland Garros Final",    color: "#FFB347", start: new Date("2026-05-24"), end: new Date("2026-06-07"), final: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",        color: "#FF6961", start: new Date("2026-06-29"), end: new Date("2026-07-12"), final: new Date("2026-07-12"), lane: "top" },
+      { name: "US Open Final",          color: "#CFCFC4", start: new Date("2026-08-31"), end: new Date("2026-09-13"), final: new Date("2026-09-13"), lane: "middle" }
     ];
 
     function renderEvents() {
@@ -202,17 +184,17 @@
           const eEl = dayRefs[segEnd  ].el.getBoundingClientRect();
           const y   = laneY[ lanes[evt.lane] ];
 
-          // translucent bar
+          // translucent span
           const bar = document.createElement('div');
           bar.className = 'event-bar';
-          bar.style.left   = (sEl.left - cw.left) + 'px';
-          bar.style.top    = (sEl.top  - cw.top  + y) + 'px';
+          bar.style.left   = (sEl.left   - cw.left) + 'px';
+          bar.style.top    = (sEl.top    - cw.top  + y) + 'px';
           bar.style.width  = (eEl.right  - sEl.left) + 'px';
           bar.style.height = laneH + 'px';
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
-          // final day: solid + text
+          // final day label
           if (w === endWeek) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
@@ -221,20 +203,18 @@
             fin.style.width  = cell0.width + 'px';
             fin.style.height = laneH + 'px';
             fin.style.backgroundColor = evt.color;
-            fin.style.color = evt.fontColor || '#000';  // <-- customizable
 
-            // rebuild text: all uppercase, but originally-lowercase -> smaller
+            // rebuild text: uppercase big for original caps, small for original lowercase
             let html = '';
             for (let ch of evt.name) {
-              if (ch === ' ') {
+              if (/\s/.test(ch)) {
                 html += '&nbsp;';
-                continue;
-              }
-              const up = ch.toUpperCase();
-              if (/[A-Z]/.test(ch)) {
-                html += `<span class="big-letter">${up}</span>`;
+              } else if (/[A-Z]/.test(ch)) {
+                html += `<span class="big-letter">${ch}</span>`;
+              } else if (/[a-z]/.test(ch)) {
+                html += `<span class="small-letter">${ch.toUpperCase()}</span>`;
               } else {
-                html += `<span class="small-letter">${up}</span>`;
+                html += `<span class="big-letter">${ch.toUpperCase()}</span>`;
               }
             }
             fin.innerHTML = html;
