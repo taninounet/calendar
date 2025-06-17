@@ -8,18 +8,17 @@
     @import url('https://fonts.googleapis.com/css2?family=Sharp+Sans+Bold&display=swap');
 
     :root {
-      /* We want 8 gaps of “2 units” and 7 cells of “38 units” = 282 total units */
-      /* So gap = 2/282 of container width, cell = 38/282 of container width */
-      --gap: calc(2/282 * 100%);
-      --cell: calc(38/282 * 100%);
-      /* corner radius = 2/37 of a cell */
-      --radius: calc(var(--cell) * 2/37);
-      /* event font will be overridden by JS */
-      --eventFont: 0.8em;
+      /* total segments: 8 gaps (2) + 7 cells (38) = 282 units */
+      --available: 100vw;
+      --gap:   calc(var(--available) * 2  / 282);
+      --cell:  calc(var(--available) * 38 / 282);
+      /* corner radius = 2/37 of one cell */
+      --radius: calc(var(--cell) * 2 / 37);
+      --eventFont: 0.8em;  /* overridden by JS */
     }
 
-    /* keep old calendar font & layout defaults */
     body {
+      /* restored your original two-font setup */
       font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
       padding: 0 40px;
@@ -27,25 +26,26 @@
       position: relative;
     }
 
-    /* grid with explicit leading+trailing gaps and no extra padding */
     .calendar {
       width: 100%;
       box-sizing: border-box;
       display: grid;
-      /* one gap, then for each of 7: cell + gap */
+      /* explicit 2:38:2:38… ratio: gap, (cell+gap)×7 */
       grid-template-columns: var(--gap) repeat(7, var(--cell) var(--gap));
+      /* vertical spacing still at --gap */
+      row-gap: var(--gap);
       position: relative;
     }
 
     .day {
       position: relative;
+      width: var(--cell);
+      height: calc(var(--cell)/2);
       border-radius: var(--radius);
       background-color: #f2f2f2;
       outline: 1px solid white;
       outline-offset: -1px;
       overflow: hidden;
-      width: var(--cell);
-      height: calc(var(--cell) / 2);
       display: flex;
       justify-content: space-between;
       align-items: stretch;
@@ -57,8 +57,8 @@
       display: flex;
       align-items: center;
       line-height: 1;
-      /* boosted ~9×: originally 0.04*cell + 0.4em, now ×9 = 0.36*cell + 3.6em */
-      font-size: calc(var(--cell) * 0.36 + 3.6em);
+      /* bumped ~9× from original: 0.36*cell + 3.6em */
+      font-size: calc(var(--cell)*0.36 + 3.6em);
       -webkit-text-stroke: 1px white;
     }
     .date-number {
@@ -79,7 +79,7 @@
       z-index: 4;
     }
 
-    /* event bars & labels */
+    /* Event styling */
     .event-bar,
     .event-final {
       position: absolute;
@@ -99,7 +99,6 @@
     .event-final span {
       display: inline-block;
       vertical-align: baseline;
-      /* now a 10% downward nudge */
       transform: translateY(10%);
     }
     .big-letter { font-size: 0.8em; }
@@ -110,10 +109,10 @@
   <div class="calendar" id="calendar"></div>
 
   <script>
-    // dynamically scale event font
     function updateFonts() {
       const w = window.innerWidth;
-      document.documentElement.style.setProperty('--eventFont', (0.0005 * w + 0.2) + 'em');
+      const ef = 0.0005 * w + 0.2;
+      document.documentElement.style.setProperty('--eventFont', ef + 'em');
     }
     window.addEventListener('resize', updateFonts);
     window.addEventListener('DOMContentLoaded', updateFonts);
@@ -122,22 +121,27 @@
     const startDate = new Date('2024-12-30');
     const endDate   = new Date('2026-12-31');
     const today     = new Date();
-    let monthTracker = -1, todayIndex = null;
-    const dayRefs = [];
 
-    function isSameDay(a, b) { return a.toDateString() === b.toDateString(); }
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    function isSameDay(d1, d2) { return d1.toDateString() === d2.toDateString(); }
+
+    const dayRefs = [];
+    let monthTracker = -1, todayIndex = null;
+
+    // build the grid
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+1)) {
       const date = new Date(d);
       const cell = document.createElement('div');
       cell.className = 'day';
+
       if (isSameDay(date, today)) {
         cell.classList.add('today');
         todayIndex = dayRefs.length;
       }
-      if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
+
+      if (date.getDate()===1 || date.getMonth()!==monthTracker) {
         const lbl = document.createElement('div');
         lbl.className = 'month-label';
-        lbl.textContent = date.toLocaleString('en-US', { month: 'short' });
+        lbl.textContent = date.toLocaleString('en-US',{month:'short'});
         cell.appendChild(lbl);
         monthTracker = date.getMonth();
       } else {
@@ -145,6 +149,7 @@
         ph.className = 'month-label';
         cell.appendChild(ph);
       }
+
       const dn = document.createElement('div');
       dn.className = 'date-number';
       dn.textContent = date.getDate();
@@ -154,29 +159,29 @@
       dayRefs.push({ el: cell, date: new Date(date) });
     }
 
-    function hexToRgba(hex, a) {
-      const [r,g,b] = [1,3,5].map(i => parseInt(hex.substr(i,2),16));
+    function hexToRgba(hex,a){
+      const [r,g,b] = [1,3,5].map(i=>parseInt(hex.substr(i,2),16));
       return `rgba(${r},${g},${b},${a})`;
     }
-    function findIndexByDate(dt) {
-      return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
+    function findIndexByDate(dt){
+      return dayRefs.findIndex(o=>o.date.toDateString()===dt.toDateString());
     }
 
     const events = [
-      { name: "Wimbledon Final",         color: "#007649", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
-      { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
-      { name: "Australian Open Final",   color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "bottom" },
-      { name: "US Open Final",           color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "bottom" },
-      { name: "Australian Open Final",   color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
-      { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",         color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
-      { name: "US Open Final",           color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
-      { name: "Super Cup Final",         color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top"    },
-      { name: "Club World Cup Final",    color: "#fed56a", textColor: "#000000", start: new Date("2025-06-14"), end: new Date("2025-07-13"), lane: "middle" },
-      { name: "Club World Cup SF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-09"), end: new Date("2025-07-09"), lane: "middle" },
-      { name: "Club World Cup SF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "middle" },
-      { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "middle" },
-      { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "middle" }
+      { name: "Wimbledon Final",      color: "#007649", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
+      { name: "Roland Garros Final",  color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
+      { name: "Australian Open Final",color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "bottom" },
+      { name: "US Open Final",        color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "bottom" },
+      { name: "Australian Open Final",color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
+      { name: "Roland Garros Final",  color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",      color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
+      { name: "US Open Final",        color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
+      { name: "Super Cup Final",      color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top"    },
+      { name: "Club World Cup Final", color: "#fed56a", textColor: "#000000", start: new Date("2025-06-14"), end: new Date("2025-07-13"), lane: "middle" },
+      { name: "Club World Cup SF",    color: "#fed56a", textColor: "#000000", start: new Date("2025-07-09"), end: new Date("2025-07-09"), lane: "middle" },
+      { name: "Club World Cup SF",    color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "middle" },
+      { name: "Club World Cup QF",    color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "middle" },
+      { name: "Club World Cup QF",    color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "middle" }
     ];
 
     function renderEvents() {
@@ -184,25 +189,22 @@
       const cell0 = dayRefs[0].el.getBoundingClientRect();
       const cellH = cell0.height;
       const laneH = cellH * 0.2;
-      const laneY = [0.1, 0.4, 0.7].map(f => f * cellH);
-      const lanes = { top: 0, middle: 1, bottom: 2 };
+      const laneY = [0.1,0.4,0.7].map(f=>f*cellH);
+      const lanes = { top:0, middle:1, bottom:2 };
 
       events.forEach(evt => {
-        const si = findIndexByDate(evt.start),
-              ei = findIndexByDate(evt.end);
-        if (si < 0 || ei < 0) return;
+        const si = findIndexByDate(evt.start), ei = findIndexByDate(evt.end);
+        if (si<0||ei<0) return;
+        const sw = Math.floor(si/7), ew = Math.floor(ei/7);
 
-        const sw = Math.floor(si/7),
-              ew = Math.floor(ei/7);
+        for (let w=sw; w<=ew; w++){
+          const s = (w===sw?si:w*7),
+                e = (w===ew?ei:w*7+6);
+          const sEl=dayRefs[s].el.getBoundingClientRect(),
+                eEl=dayRefs[e].el.getBoundingClientRect(),
+                y  = laneY[lanes[evt.lane]];
 
-        for (let w = sw; w <= ew; w++) {
-          const s = (w === sw ? si : w*7),
-                e = (w === ew ? ei : w*7 + 6);
-          const sEl = dayRefs[s].el.getBoundingClientRect(),
-                eEl = dayRefs[e].el.getBoundingClientRect(),
-                y   = laneY[lanes[evt.lane]];
-
-          // translucent span
+          // translucent background
           const bar = document.createElement('div');
           bar.className = 'event-bar';
           bar.style.left   = `${sEl.left - cw.left}px`;
@@ -213,7 +215,7 @@
           calendar.appendChild(bar);
 
           // final-day label
-          if (w === ew) {
+          if (w===ew) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
             fin.style.left            = `${eEl.left - cw.left}px`;
