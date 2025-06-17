@@ -65,7 +65,6 @@
       position: absolute;
       border-radius: 6px;
       display: flex;
-      /* align spans on a shared baseline now */
       align-items: baseline;
       justify-content: center;
       font-family: Futura, Helvetica, sans-serif;
@@ -73,13 +72,15 @@
       pointer-events: none;
       z-index: 5;
       line-height: 1;
+      /* nudge the text down a bit */
+      transform: translateY(10%);
     }
     .event-bar {
       /* translucent background only */
     }
     .event-final {
       font-weight: normal;
-      font-size: 0.9em;    /* base size for spans */
+      font-size: 0.9em;    /* base for spans */
       color: black;        /* always black */
     }
     .event-final span {
@@ -90,7 +91,7 @@
       font-size: 1.6em;
     }
     .small-letter {
-      font-size: 1em;
+      font-size: 1.2em;    /* increased from 1em */
     }
   </style>
 </head>
@@ -151,7 +152,7 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // ALL eight of your original events, with `final` preserved
+    // ALL eight of your original events
     const events = [
       { name: "Wimbledon Final",        color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), final: new Date("2025-07-13"), lane: "bottom" },
       { name: "Roland Garros Final",    color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), final: new Date("2025-06-08"), lane: "middle" },
