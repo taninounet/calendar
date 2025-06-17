@@ -22,8 +22,7 @@
     body {
       font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
-      padding: 0;
-      position: relative;
+      margin: 0;
     }
 
     .calendar {
@@ -40,7 +39,6 @@
       background-color: #f2f2f2;
       outline: 1px solid white;
       outline-offset: -1px;
-      overflow: hidden;
       width: var(--cell);
       height: calc(var(--cell) * 0.5);
       display: flex;
@@ -117,7 +115,7 @@
     const calendar  = document.getElementById('calendar');
     const startDate = new Date('2024-12-30');
     const endDate   = new Date('2026-12-31');
-    const today     = new Date(); // on 2025-06-17, this cell will get the thin red outline
+    const today     = new Date('2025-06-17'); // Simulate June 17, 2025 for demo
 
     function isSameDay(d1, d2) {
       return d1.toDateString() === d2.toDateString();
@@ -126,6 +124,7 @@
     const dayRefs = [];
     let monthTracker = -1;
 
+    // Build calendar grid
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const date = new Date(d);
       const cell = document.createElement('div');
@@ -135,6 +134,7 @@
         cell.classList.add('today');
       }
 
+      // Month label
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const lbl = document.createElement('div');
         lbl.className = 'month-label';
@@ -147,6 +147,7 @@
         cell.appendChild(ph);
       }
 
+      // Date number
       const dn = document.createElement('div');
       dn.className = 'date-number';
       dn.textContent = date.getDate();
@@ -160,10 +161,12 @@
       const [r,g,b] = [1,3,5].map(i => parseInt(hex.substr(i,2), 16));
       return `rgba(${r},${g},${b},${a})`;
     }
+
     function findIndexByDate(dt) {
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
+    // Full list of events plus the new one-day entry
     const events = [
       { name: "Wimbledon Final",         color: "#007649", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
       { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
@@ -179,7 +182,6 @@
       { name: "Club World Cup SF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "middle" },
       { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "middle" },
       { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "middle" },
-      // Your new one-day event on 2025-06-17:
       { name: "Club World Cup T",        color: "#fed56a", textColor: "#000000", start: new Date("2025-06-17"), end: new Date("2025-06-17"), lane: "middle" }
     ];
 
@@ -198,8 +200,8 @@
         const sw = Math.floor(si / 7), ew = Math.floor(ei / 7);
 
         for (let w = sw; w <= ew; w++) {
-          const s = (w === sw ? si : w * 7);
-          const e = (w === ew ? ei : w * 7 + 6);
+          const s = w === sw ? si : w * 7;
+          const e = w === ew ? ei : w * 7 + 6;
           const sEl = dayRefs[s].el.getBoundingClientRect();
           const eEl = dayRefs[e].el.getBoundingClientRect();
           const y = laneY[lanes[evt.lane]];
@@ -239,7 +241,17 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', renderEvents);
+    function scrollToToday() {
+      const todayEl = document.querySelector('.today');
+      if (todayEl) {
+        todayEl.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderEvents();
+      scrollToToday();
+    });
   </script>
 </body>
 </html>
