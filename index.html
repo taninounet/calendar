@@ -80,15 +80,16 @@
     }
 
     .event-bar {
-      /* no text here now */
+      /* translucent spans have no text */
     }
 
     .event-final {
-      font-weight: bold;
+      /* normal font-weight (not bold) */
     }
 
+    /* first letter of each word */
     .big-letter {
-      font-size: 1.2em;
+      font-size: 1.5em;
       line-height: 1;
     }
   </style>
@@ -154,14 +155,14 @@
 
     // Sample events
     const events = [
-      { name: "ATP Finals Final",    color: "#FDFD96", start: new Date("2025-01-20"), end: new Date("2025-02-02"), final: new Date("2025-02-02"), lane: "top" },
-      { name: "ROLAND GARROS FINAL",  color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), final: new Date("2025-06-08"), lane: "middle" },
-      { name: "WIMBLEDON FINAL",      color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), final: new Date("2025-07-13"), lane: "bottom" },
-      { name: "US OPEN FINAL",        color: "#AEC6CF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), final: new Date("2025-09-07"), lane: "top" },
-      { name: "AUSTRALIAN OPEN FINAL",color: "#B39EB5", start: new Date("2026-01-19"), end: new Date("2026-02-01"), final: new Date("2026-02-01"), lane: "middle" },
-      { name: "ROLAND GARROS FINAL",  color: "#FFB347", start: new Date("2026-05-24"), end: new Date("2026-06-07"), final: new Date("2026-06-07"), lane: "bottom" },
-      { name: "WIMBLEDON FINAL",      color: "#FF6961", start: new Date("2026-06-29"), end: new Date("2026-07-12"), final: new Date("2026-07-12"), lane: "top" },
-      { name: "US OPEN FINAL",        color: "#CFCFC4", start: new Date("2026-08-31"), end: new Date("2026-09-13"), final: new Date("2026-09-13"), lane: "middle" }
+      { name: "Wimbledon Final",        color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), final: new Date("2025-07-13"), lane: "bottom" },
+      { name: "Roland Garros Final",    color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), final: new Date("2025-06-08"), lane: "middle" },
+      { name: "Australian Open Final",  color: "#FDFD96", start: new Date("2025-01-20"), end: new Date("2025-02-02"), final: new Date("2025-02-02"), lane: "top" },
+      { name: "US Open Final",          color: "#AEC6CF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), final: new Date("2025-09-07"), lane: "top" },
+      { name: "Australian Open Final",  color: "#B39EB5", start: new Date("2026-01-19"), end: new Date("2026-02-01"), final: new Date("2026-02-01"), lane: "middle" },
+      { name: "Roland Garros Final",    color: "#FFB347", start: new Date("2026-05-24"), end: new Date("2026-06-07"), final: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",        color: "#FF6961", start: new Date("2026-06-29"), end: new Date("2026-07-12"), final: new Date("2026-07-12"), lane: "top" },
+      { name: "US Open Final",          color: "#CFCFC4", start: new Date("2026-08-31"), end: new Date("2026-09-13"), final: new Date("2026-09-13"), lane: "middle" }
     ];
 
     // Render events (split across weeks)
@@ -199,7 +200,7 @@
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
-          // final-day solid + text
+          // final-day solid + styled text
           if (w === endWeek) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
@@ -209,13 +210,11 @@
             fin.style.height = laneH + 'px';
             fin.style.backgroundColor = evt.color;
 
-            // wrap every A–Z in .big-letter
-            const txt = evt.name.toUpperCase();
-            fin.innerHTML = txt.split('').map(ch => {
-              return /[A-Z]/.test(ch)
-                ? `<span class="big-letter">${ch}</span>`
-                : ch;
-            }).join('');
+            // uppercase and wrap first letter of each word
+            const words = evt.name.toUpperCase().split(' ');
+            fin.innerHTML = words
+              .map(w => `<span class="big-letter">${w[0]}</span>${w.slice(1)}`)
+              .join(' ');
 
             calendar.appendChild(fin);
           }
