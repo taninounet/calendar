@@ -87,13 +87,11 @@
       const date = new Date(d);
       const dayDiv = document.createElement('div');
       dayDiv.className = 'day';
-
       if (isSameDay(date, today)) {
         dayDiv.classList.add('today');
         todayIndex = dayRefs.length;
       }
 
-      // Month label
       if (date.getDate() === 1 || date.getMonth() !== monthTracker) {
         const monthLabel = document.createElement('div');
         monthLabel.className = 'month-label';
@@ -106,7 +104,6 @@
         dayDiv.appendChild(placeholder);
       }
 
-      // Date number
       const dateNum = document.createElement('div');
       dateNum.className = 'date-number';
       dateNum.textContent = date.getDate();
@@ -118,9 +115,13 @@
 
     // Scroll to today
     window.onload = () => {
-      if (todayIndex !== null) {
-        dayRefs[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      setTimeout(() => {
+        if (todayIndex !== null) {
+          const todayElem = dayRefs[todayIndex];
+          const top = todayElem.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: top - window.innerHeight / 2, behavior: 'smooth' });
+        }
+      }, 100);
     };
   </script>
 </body>
