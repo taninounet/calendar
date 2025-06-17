@@ -15,8 +15,8 @@
       --radius: calc(var(--cell) * 1.5 / 38);
       --eventRadius: calc(var(--cell) * 0.5 / 38);
       --eventFont: calc(var(--cell) * 0.07);
-      /* increased label font by factor 10/565: (0.6 + 10/565) = 349/565 */
-      --labelFont: calc(var(--cell) * 349 / 565);
+      /* base 0.6 + 20/565 ≈ 0.6 + 0.0354 = 0.6354 */
+      --labelFont: calc(var(--cell) * 359 / 565);
     }
 
     body {
@@ -73,13 +73,10 @@
     }
 
     .today {
-      /* border: 2px solid red; */
+      /* thin red outline just outside the grey cell */
+      outline: 1px solid red;
+      outline-offset: 1px;
       z-index: 4;
-    }
-    /* instead of border, make the date-number black */
-    .today .date-number {
-      color: black;
-      -webkit-text-stroke: none;
     }
 
     /* Event styling */
@@ -88,7 +85,7 @@
       position: absolute;
       border-radius: var(--eventRadius);
       display: flex;
-      align-items: center; /* vertical center */
+      align-items: center;
       justify-content: center;
       font-family: 'Sharp Sans Bold', Futura, Helvetica, sans-serif;
       text-transform: uppercase;
@@ -101,11 +98,14 @@
       font-size: var(--eventFont);
       color: inherit;
     }
-    /* ensure letter-spans also center in mobile */
+
+    /* center all letter spans identically */
     .event-final span {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      line-height: 1;
+      align-self: center;
     }
 
     .big-letter { font-size: 0.8em; }
