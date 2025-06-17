@@ -15,21 +15,23 @@
       --radius: calc(var(--cell) * 1.5 / 38);
       --eventRadius: calc(var(--cell) * 0.5 / 38);
       --eventFont: calc(var(--cell) * 0.07);
-      /* base 0.6 + 20/565 ≈ 0.6354 */
+      /* base 0.6 + 20/565 ≈ 0.6 + 0.0354 = 0.6354 */
       --labelFont: calc(var(--cell) * 359 / 565);
     }
 
     body {
       font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
-      margin: 0;
+      padding: 0;
+      position: relative;
     }
 
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, var(--cell));
       gap: var(--gap);
-      padding: var(--gap) 0;
+      padding: 0 var(--gap);
+      position: relative;
     }
 
     .day {
@@ -38,6 +40,7 @@
       background-color: #f2f2f2;
       outline: 1px solid white;
       outline-offset: -1px;
+      overflow: hidden;
       width: var(--cell);
       height: calc(var(--cell) * 0.5);
       display: flex;
@@ -71,8 +74,8 @@
 
     .today {
       /* thin red outline just outside the grey cell */
-      outline: 2px solid red;
-      outline-offset: 2px;
+      outline: 1px solid red;
+      outline-offset: 1px;
       z-index: 4;
     }
 
@@ -96,7 +99,6 @@
       color: inherit;
     }
 
-    /* center all letter spans identically */
     .event-final span {
       display: inline-flex;
       align-items: center;
@@ -115,7 +117,7 @@
     const calendar  = document.getElementById('calendar');
     const startDate = new Date('2024-12-30');
     const endDate   = new Date('2026-12-31');
-    const today     = new Date();
+    const today     = new Date(); // on 2025-06-17, this cell will get the thin red outline
 
     function isSameDay(d1, d2) {
       return d1.toDateString() === d2.toDateString();
@@ -167,17 +169,18 @@
       { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "bottom" },
       { name: "Australian Open Final",   color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "bottom" },
       { name: "US Open Final",           color: "#02288d", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "bottom" },
-      { name: "Club World Cup T",        color: "#fed56a", textColor: "#000000", start: new Date("2025-04-17"), end: new Date("2025-04-17"), lane: "middle" },
+      { name: "Australian Open Final",   color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
+      { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",         color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
+      { name: "US Open Final",           color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
+      { name: "Super Cup Final",         color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top"    },
       { name: "Club World Cup Final",    color: "#fed56a", textColor: "#000000", start: new Date("2025-06-14"), end: new Date("2025-07-13"), lane: "middle" },
       { name: "Club World Cup SF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-09"), end: new Date("2025-07-09"), lane: "middle" },
       { name: "Club World Cup SF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-08"), end: new Date("2025-07-08"), lane: "middle" },
       { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-05"), end: new Date("2025-07-05"), lane: "middle" },
       { name: "Club World Cup QF",       color: "#fed56a", textColor: "#000000", start: new Date("2025-07-04"), end: new Date("2025-07-04"), lane: "middle" },
-      { name: "Australian Open Final",   color: "#1c91d0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "bottom" },
-      { name: "Roland Garros Final",     color: "#d35220", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",         color: "#007649", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "bottom" },
-      { name: "US Open Final",           color: "#02288d", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "bottom" },
-      { name: "Super Cup Final",         color: "#132257", textColor: "#FFFFFF", start: new Date("2025-08-13"), end: new Date("2025-08-13"), lane: "top" }
+      // Your new one-day event on 2025-06-17:
+      { name: "Club World Cup T",        color: "#fed56a", textColor: "#000000", start: new Date("2025-06-17"), end: new Date("2025-06-17"), lane: "middle" }
     ];
 
     function renderEvents() {
@@ -236,19 +239,7 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      renderEvents();
-      // scroll so "today" sits about 20% down from the top of the viewport
-      const todayEl = calendar.querySelector('.today');
-      if (todayEl) {
-        const rect = todayEl.getBoundingClientRect();
-        const offset = window.innerHeight * 0.2;
-        window.scrollTo({
-          top: window.scrollY + rect.top - offset,
-          behavior: 'smooth'
-        });
-      }
-    });
+    window.addEventListener('DOMContentLoaded', renderEvents);
   </script>
 </body>
 </html>
