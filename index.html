@@ -77,20 +77,28 @@
       text-transform: uppercase;
       pointer-events: none;
       z-index: 5;
+      line-height: 1;
     }
 
     .event-bar {
-      /* translucent spans have no text */
+      /* no text here */
     }
 
     .event-final {
-      /* normal font-weight (not bold) */
+      /* normal weight, adjust base size if needed */
+      font-weight: normal;
+      font-size: 0.9em;
     }
 
-    /* first letter of each word */
+    .event-final span {
+      display: inline-block;
+      vertical-align: baseline;
+    }
     .big-letter {
-      font-size: 1.5em;
-      line-height: 1;
+      font-size: 1.6em;
+    }
+    .small-letter {
+      font-size: 1em;
     }
   </style>
 </head>
@@ -201,7 +209,7 @@
           calendar.appendChild(bar);
 
           // final-day solid + styled text
-          if (w === endWeek) {
+          if (w === Math.floor(ei / 7)) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
             fin.style.left   = (eEl.left - cw.left) + 'px';
@@ -210,12 +218,22 @@
             fin.style.height = laneH + 'px';
             fin.style.backgroundColor = evt.color;
 
-            // uppercase and wrap first letter of each word
-            const words = evt.name.toUpperCase().split(' ');
-            fin.innerHTML = words
-              .map(w => `<span class="big-letter">${w[0]}</span>${w.slice(1)}`)
-              .join(' ');
-
+            // uppercase and wrap input-uppercase chars bigger
+            const original = evt.name;
+            let out = '';
+            for (let ch of original) {
+              if (ch === ' ') {
+                out += '&nbsp;';
+              } else {
+                const up = ch.toUpperCase();
+                if (ch === up && /[A-Z]/.test(ch)) {
+                  out += `<span class="big-letter">${up}</span>`;
+                } else {
+                  out += `<span class="small-letter">${up}</span>`;
+                }
+              }
+            }
+            fin.innerHTML = out;
             calendar.appendChild(fin);
           }
         }
@@ -223,7 +241,6 @@
     }
 
     window.onload = () => {
-      // scroll to today
       setTimeout(() => {
         if (todayIndex != null) {
           const te = dayRefs[todayIndex].el.getBoundingClientRect();
@@ -233,8 +250,6 @@
           });
         }
       }, 100);
-
-      // draw events
       renderEvents();
     };
   </script>
