@@ -85,20 +85,26 @@
     }
 
     .event-final {
-      /* normal weight, adjust base size if needed */
+      /* normal weight */
       font-weight: normal;
-      font-size: 0.9em;
+      /* base font-size for small letters */
+      font-size: 1em;
     }
 
+    /* ensure all letters sit on the same baseline */
     .event-final span {
       display: inline-block;
-      vertical-align: baseline;
+      vertical-align: bottom;
     }
+
+    /* big letters (input capitals) */
     .big-letter {
       font-size: 1.6em;
     }
+
+    /* small letters (input lowercase) made larger */
     .small-letter {
-      font-size: 1em;
+      font-size: 1.2em;
     }
   </style>
 </head>
@@ -161,16 +167,27 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // Sample events
+    // Sample events with textColor variable
     const events = [
-      { name: "Wimbledon Final",        color: "#77DD77", start: new Date("2025-06-30"), end: new Date("2025-07-13"), final: new Date("2025-07-13"), lane: "bottom" },
-      { name: "Roland Garros Final",    color: "#FFD1DC", start: new Date("2025-05-25"), end: new Date("2025-06-08"), final: new Date("2025-06-08"), lane: "middle" },
-      { name: "Australian Open Final",  color: "#FDFD96", start: new Date("2025-01-20"), end: new Date("2025-02-02"), final: new Date("2025-02-02"), lane: "top" },
-      { name: "US Open Final",          color: "#AEC6CF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), final: new Date("2025-09-07"), lane: "top" },
-      { name: "Australian Open Final",  color: "#B39EB5", start: new Date("2026-01-19"), end: new Date("2026-02-01"), final: new Date("2026-02-01"), lane: "middle" },
-      { name: "Roland Garros Final",    color: "#FFB347", start: new Date("2026-05-24"), end: new Date("2026-06-07"), final: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",        color: "#FF6961", start: new Date("2026-06-29"), end: new Date("2026-07-12"), final: new Date("2026-07-12"), lane: "top" },
-      { name: "US Open Final",          color: "#CFCFC4", start: new Date("2026-08-31"), end: new Date("2026-09-13"), final: new Date("2026-09-13"), lane: "middle" }
+      {
+        name: "Wimbledon Final",
+        color: "#77DD77",
+        textColor: "#000000",
+        start: new Date("2025-06-30"),
+        end:   new Date("2025-07-13"),
+        final: new Date("2025-07-13"),
+        lane: "bottom"
+      },
+      {
+        name: "Roland Garros Final",
+        color: "#FFD1DC",
+        textColor: "#000000",
+        start: new Date("2025-05-25"),
+        end:   new Date("2025-06-08"),
+        final: new Date("2025-06-08"),
+        lane: "middle"
+      },
+      /* … other events … */
     ];
 
     // Render events (split across weeks)
@@ -198,32 +215,33 @@
           const eEl = dayRefs[segEnd  ].el.getBoundingClientRect();
           const y   = laneY[ lanes[evt.lane] || 0 ];
 
-          // translucent span (no text)
+          // translucent span
           const bar = document.createElement('div');
           bar.className = 'event-bar';
-          bar.style.left   = (sEl.left   - cw.left) + 'px';
-          bar.style.top    = (sEl.top    - cw.top  + y) + 'px';
-          bar.style.width  = (eEl.right  - sEl.left) + 'px';
-          bar.style.height = laneH + 'px';
+          bar.style.left            = (sEl.left   - cw.left) + 'px';
+          bar.style.top             = (sEl.top    - cw.top  + y) + 'px';
+          bar.style.width           = (eEl.right  - sEl.left) + 'px';
+          bar.style.height          = laneH + 'px';
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
           // final-day solid + styled text
-          if (w === Math.floor(ei / 7)) {
+          if (w === endWeek) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
-            fin.style.left   = (eEl.left - cw.left) + 'px';
-            fin.style.top    = (eEl.top  - cw.top  + y) + 'px';
-            fin.style.width  = cell0.width + 'px';
-            fin.style.height = laneH + 'px';
+            fin.style.left            = (eEl.left - cw.left) + 'px';
+            fin.style.top             = (eEl.top  - cw.top  + y) + 'px';
+            fin.style.width           = cell0.width + 'px';
+            fin.style.height          = laneH + 'px';
             fin.style.backgroundColor = evt.color;
+            fin.style.color           = evt.textColor;
 
-            // uppercase and wrap input-uppercase chars bigger
+            // uppercase input, wrap only actual input-capitals
             const original = evt.name;
             let out = '';
             for (let ch of original) {
               if (ch === ' ') {
-                out += '&nbsp;';
+                out += ' ';
               } else {
                 const up = ch.toUpperCase();
                 if (ch === up && /[A-Z]/.test(ch)) {
