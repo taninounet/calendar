@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sports Calendar with Events</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sharp+Sans+Bold&display=swap');
+
     body {
       font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
@@ -63,7 +65,7 @@
       display: flex;
       align-items: baseline;
       justify-content: center;
-      font-family: Futura, Helvetica, sans-serif;
+      font-family: 'Sharp Sans Bold', Futura, Helvetica, sans-serif;
       text-transform: uppercase;
       pointer-events: none;
       z-index: 5;
@@ -72,7 +74,7 @@
     .event-bar { }
     .event-final {
       font-weight: normal;
-      font-size: 0.9em;  /* base size for spans */
+      font-size: 0.9em;
       /* color will be set per-event via JS */
     }
     .event-final span {
@@ -84,7 +86,7 @@
       font-size: 1.6em;
     }
     .small-letter {
-      font-size: 1.2em;
+      font-size: 1.4em;
     }
   </style>
 </head>
@@ -141,16 +143,16 @@
       return dayRefs.findIndex(o => o.date.toDateString() === dt.toDateString());
     }
 
-    // Add `textColor` to each event (currently all "#000000")
+    // Events with custom background & text colors
     const events = [
-      { name: "Wimbledon Final",        color: "#77DD77", textColor: "#000000", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
-      { name: "Roland Garros Final",    color: "#FFD1DC", textColor: "#000000", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "middle" },
-      { name: "Australian Open Final",  color: "#FDFD96", textColor: "#000000", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "top" },
-      { name: "US Open Final",          color: "#AEC6CF", textColor: "#000000", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "top" },
-      { name: "Australian Open Final",  color: "#B39EB5", textColor: "#000000", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "middle" },
-      { name: "Roland Garros Final",    color: "#FFB347", textColor: "#000000", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
-      { name: "Wimbledon Final",        color: "#FF6961", textColor: "#000000", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "top" },
-      { name: "US Open Final",          color: "#CFCFC4", textColor: "#000000", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "middle" }
+      { name: "Wimbledon Final",     color: "#536D33", textColor: "#FFFFFF", start: new Date("2025-06-30"), end: new Date("2025-07-13"), lane: "bottom" },
+      { name: "Roland Garros Final", color: "#BB5522", textColor: "#FFFFFF", start: new Date("2025-05-25"), end: new Date("2025-06-08"), lane: "middle" },
+      { name: "Australian Open Final",color: "#1991D0", textColor: "#FFFFFF", start: new Date("2025-01-20"), end: new Date("2025-02-02"), lane: "top" },
+      { name: "US Open Final",       color: "#B2C8FF", textColor: "#FFFFFF", start: new Date("2025-08-25"), end: new Date("2025-09-07"), lane: "top" },
+      { name: "Australian Open Final",color: "#1991D0", textColor: "#FFFFFF", start: new Date("2026-01-19"), end: new Date("2026-02-01"), lane: "middle" },
+      { name: "Roland Garros Final", color: "#BB5522", textColor: "#FFFFFF", start: new Date("2026-05-24"), end: new Date("2026-06-07"), lane: "bottom" },
+      { name: "Wimbledon Final",     color: "#536D33", textColor: "#FFFFFF", start: new Date("2026-06-29"), end: new Date("2026-07-12"), lane: "top" },
+      { name: "US Open Final",       color: "#B2C8FF", textColor: "#FFFFFF", start: new Date("2026-08-31"), end: new Date("2026-09-13"), lane: "middle" }
     ];
 
     function renderEvents() {
@@ -175,13 +177,13 @@
           const eEl = dayRefs[segEnd  ].el.getBoundingClientRect();
           const y   = laneY[ lanes[evt.lane] ];
 
-          // translucent background
+          // translucent background bar
           const bar = document.createElement('div');
           bar.className = 'event-bar';
-          bar.style.left   = (sEl.left   - cw.left) + 'px';
-          bar.style.top    = (sEl.top    - cw.top  + y) + 'px';
-          bar.style.width  = (eEl.right  - sEl.left) + 'px';
-          bar.style.height = laneH + 'px';
+          bar.style.left   = `${sEl.left - cw.left}px`;
+          bar.style.top    = `${sEl.top  - cw.top  + y}px`;
+          bar.style.width  = `${eEl.right - sEl.left}px`;
+          bar.style.height = `${laneH}px`;
           bar.style.backgroundColor = hexToRgba(evt.color, 0.4);
           calendar.appendChild(bar);
 
@@ -189,12 +191,12 @@
           if (w === endWeek) {
             const fin = document.createElement('div');
             fin.className = 'event-final';
-            fin.style.left   = (eEl.left  - cw.left) + 'px';
-            fin.style.top    = (eEl.top   - cw.top  + y) + 'px';
-            fin.style.width  = cell0.width + 'px';
-            fin.style.height = laneH + 'px';
+            fin.style.left   = `${eEl.left - cw.left}px`;
+            fin.style.top    = `${eEl.top  - cw.top  + y}px`;
+            fin.style.width  = `${cell0.width}px`;
+            fin.style.height = `${laneH}px`;
             fin.style.backgroundColor = evt.color;
-            fin.style.color = evt.textColor; // apply per-event text color
+            fin.style.color = evt.textColor;
 
             let html = '';
             for (let ch of evt.name) {
@@ -212,10 +214,10 @@
 
     window.onload = () => {
       setTimeout(() => {
-        if (todayIndex != null) {
+        if (todayIndex !== null) {
           const te = dayRefs[todayIndex].el.getBoundingClientRect();
           window.scrollTo({
-            top: te.top + window.scrollY - window.innerHeight/2,
+            top: te.top + window.scrollY - window.innerHeight / 2,
             behavior: 'smooth'
           });
         }
