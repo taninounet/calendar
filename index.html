@@ -8,19 +8,19 @@
     @import url('https://fonts.googleapis.com/css2?family=Sharp+Sans+Bold&display=swap');
 
     :root {
-      /* total segments: 8 gaps (2 units) + 7 cells (38 units) = 282 units */
       --available: 100vw;
-      --gap: calc(var(--available) * 2 / 282);
       --cell: calc(var(--available) * 38 / 282);
-      /* radius = 2/37 of cell */
-      --radius: calc(var(--cell) * 2 / 37);
-      --eventFont: 0.8em; /* will be overridden by JS */
+      --gap: calc(var(--cell) * 2 / 38);
+      --padding: calc(var(--cell) * 2 / 37);
+      --radius: calc(var(--cell) * 1.5 / 38);
+      --eventRadius: calc(var(--cell) * 1 / 38);
+      --eventFont: 0.8em; /* overridden by JS */
     }
 
     body {
       font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       background: white;
-      padding: 0;           /* removed fixed 40px so ratio can apply */
+      padding: 0;
       position: relative;
     }
 
@@ -40,7 +40,7 @@
       outline-offset: -1px;
       overflow: hidden;
       width: var(--cell);
-      height: calc(var(--cell) / 2);
+      height: calc(var(--cell) * 0.5);
       display: flex;
       justify-content: space-between;
       align-items: stretch;
@@ -52,25 +52,26 @@
       display: flex;
       align-items: center;
       line-height: 1;
-      /* 9× larger: (0.04*cell + 0.4em) ×9 = 0.36*cell + 3.6em */
       font-size: calc(var(--cell) * 0.36 + 3.6em);
-      -webkit-text-stroke: 1px white;
     }
+
     .date-number {
       justify-content: flex-end;
       color: white;
-      padding-right: 0.2em;
+      padding-right: var(--padding);
+      -webkit-text-stroke: 1px white;
     }
+
     .month-label {
       justify-content: flex-start;
       color: #dddddd;
       font-weight: bold;
-      padding-left: 0.2em;
+      padding-left: var(--padding);
       -webkit-text-stroke-color: #dddddd;
     }
 
     .today {
-      border: 3px solid red;
+      border: 1px solid red;
       z-index: 4;
     }
 
@@ -78,9 +79,9 @@
     .event-bar,
     .event-final {
       position: absolute;
-      border-radius: var(--radius);
+      border-radius: var(--eventRadius);
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: center;
       font-family: 'Sharp Sans Bold', Futura, Helvetica, sans-serif;
       text-transform: uppercase;
@@ -88,14 +89,12 @@
       line-height: 1;
       z-index: 5;
     }
+
     .event-final {
       font-size: var(--eventFont);
+      color: inherit;
     }
-    .event-final span {
-      display: inline-block;
-      vertical-align: baseline;
-      transform: translateY(10%);
-    }
+
     .big-letter { font-size: 0.8em; }
     .small-letter { font-size: 0.7em; }
   </style>
@@ -106,7 +105,6 @@
   <script>
     function updateFonts() {
       const w = window.innerWidth;
-      // event font: f(w) = 0.0005*w + 0.2
       document.documentElement.style.setProperty(
         '--eventFont',
         (0.0005 * w + 0.2) + 'em'
